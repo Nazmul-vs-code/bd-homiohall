@@ -1,0 +1,6 @@
+{
+  "name": "বাংলাদেশ হোমিও হল",
+  "description": "Official healthcare clinic and appointment platform for Bangladesh Homoeo Hall, led by Dr. Tamjid Hossain.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

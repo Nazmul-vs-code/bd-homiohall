@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-bengali: 'Hind Siliguri', 'Noto Sans Bengali', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    
+    --clinic-green: #0b6b47;
+    --clinic-green-dark: #064e3b;
+    --clinic-green-light: #ecfdf5;
+    --clinic-green-subtle: #f0fdf4;
+    
+    --clinic-red: #d32f2f;
+    --clinic-red-dark: #b71c1c;
+    --clinic-red-light: #fef2f2;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-bengali);
+  }
+
+  body {
+    background-color: #f8faf9;
+    color: #0f172a;
+    font-family: var(--font-bengali);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.font-bengali {
+  font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+}
+
+.font-sans-en {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

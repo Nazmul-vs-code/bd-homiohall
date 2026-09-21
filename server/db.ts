@@ -1,0 +1,732 @@
+import fs from 'fs';
+import path from 'path';
+import mongoose from 'mongoose';
+import { SiteSettings, DoctorProfile, Treatment, Chamber, Article, Appointment } from '../src/types.js';
+
+const DATA_DIR = path.join(process.cwd(), 'data');
+const DATA_FILE = path.join(DATA_DIR, 'clinic_db.json');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+export const defaultSiteSettings: SiteSettings = {
+  clinicNameBn: "বাংলাদেশ হোমিও হল",
+  clinicNameEn: "Bangladesh Homoeo Hall",
+  taglineBn: "একটি জটিল ব্যাধি হোমিওপ্যাথিক চিকিৎসা কেন্দ্র",
+  sloganBn: "দীর্ঘদিনের জটিল ও পুরনো রোগের বিশ্বস্ত সমাধান",
+  additionalMessageBn: "নিরাপদ ও কার্যকর হোমিওপ্যাথিক চিকিৎসা • আধুনিক চিকিৎসা • মানবিক সেবা • দীর্ঘস্থায়ী সুফল",
+  heroHeadlineBn: "দীর্ঘদিনের জটিল ও পুরনো রোগের বিশ্বস্ত হোমিওপ্যাথিক সমাধান",
+  heroDescriptionBn: "প্রিন্সিপাল ডা. তামজীদ হোসেন-এর সরাসরি তত্ত্বাবধানে চাঁদপুরের মতলব ও হাজীগঞ্জে আধুনিক ও বিজ্ঞানসম্মত হোমিওপ্যাথিক চিকিৎসা সেবা।",
+  ctaAppointmentTextBn: "সিরিয়াল বা সাক্ষাতের আবেদন করুন",
+  ctaCallTextBn: "সরাসরি ফোন করুন",
+  heroImages: [
+    "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80"
+  ],
+  phones: ["+88 01714-990001", "+88 01614-990001"],
+  emergencyHotline: "+88 01714-990001",
+  socialLinks: {
+    facebook: "https://facebook.com",
+    twitter: "https://twitter.com",
+    youtube: "https://youtube.com"
+  }
+};
+
+export const defaultDoctorProfile: DoctorProfile = {
+  nameBn: "ডা. তামজীদ হোসেন",
+  nameEn: "Dr. Tamjid Hossain",
+  qualifications: "MBBS, DHMS (Homeopathy), PDT (Medicine)",
+  registrationNo: "চিকিৎসক রেজিঃ নং- ২৬১৭৬",
+  designation: "Principal, Chandpur Homeopathic Medical College & Hospital",
+  designationBn: "প্রিন্সিপাল, চাঁদপুর হোমিওপ্যাথিক মেডিকেল কলেজ ও হাসপাতাল",
+  role: "Lead Physician & Consultant",
+  roleBn: "প্রধান চিকিৎসক ও কনসালট্যান্ট, বাংলাদেশ হোমিও হল",
+  bioBn: "ডা. তামজীদ হোসেন দীর্ঘ অভিজ্ঞতাসম্পন্ন একজন বিশিষ্ট হোমিওপ্যাথিক চিকিৎসক ও শিক্ষাবিদ। তিনি আধুনিক রোগ নির্ণয় ও ক্লাসিক্যাল হোমিওপ্যাথির সমন্বয়ে জটিল ও দুরারোগ্য ব্যাধির চিকিৎসা দিয়ে আসছেন। প্রতিটি রোগীকে পর্যাপ্ত সময় দিয়ে শারীরিক, মানসিক ও সামগ্রিক লক্ষণের ভিত্তিতে ব্যক্তিগতকৃত ওষুধ নির্বাচন করেন।",
+  imageUrl: "/dr-tamjid-hossain.jpg",
+  experienceYears: 18
+};
+
+export const defaultChambers: Chamber[] = [
+  {
+    id: "matlab-chamber",
+    nameEn: "Matlab Chamber",
+    nameBn: "মতলব চেম্বার",
+    addressEn: "Ma Amena Tower, Ground Floor, under Islamic Bank, Matlab Bazar, Matlab (South), Chandpur",
+    addressBn: "মা আমেনা টাওয়ার, ইসলামী ব্যাংকের নিচ তলা, মতলব বাজার, মতলব দঃ, চাঁদপুর",
+    visitingDaysEn: "Saturday, Sunday, Thursday",
+    visitingDaysBn: "শনিবার, রবিবার ও বৃহস্পতিবার",
+    visitingHoursEn: "10:00 AM – 8:00 PM",
+    visitingHoursBn: "সকাল ১০টা থেকে রাত ০৮টা পর্যন্ত",
+    phone: "+88 01714-990001",
+    mapUrl: "https://maps.google.com/?q=Matlab+Bazar+Chandpur"
+  },
+  {
+    id: "hajiganj-chamber",
+    nameEn: "Hajiganj Chamber",
+    nameBn: "হাজীগঞ্জ চেম্বার",
+    addressEn: "Haq Tower, Degree College Road, Ground Floor, under Golden Hospital, Hajiganj, Chandpur",
+    addressBn: "হক টাওয়ার, ডিগ্রি কলেজ রোড, গোল্ডেন হাসপাতালের নিচ তলা, হাজীগঞ্জ, চাঁদপুর",
+    visitingDaysEn: "Monday, Tuesday, Wednesday, Friday",
+    visitingDaysBn: "সোমবার, মঙ্গলবার, বুধবার ও শুক্রবার",
+    visitingHoursEn: "10:00 AM – 8:00 PM",
+    visitingHoursBn: "সকাল ১০টা থেকে রাত ০৮টা পর্যন্ত",
+    phone: "+88 01614-990001",
+    mapUrl: "https://maps.google.com/?q=Hajiganj+Chandpur"
+  }
+];
+
+export const defaultTreatments: Treatment[] = [
+  {
+    id: "t-1",
+    titleEn: "Consultation & General Treatment",
+    titleBn: "পরামর্শ ও চিকিৎসা",
+    descriptionEn: "Comprehensive physical and constitutional homeopathic assessment for acute and chronic conditions.",
+    descriptionBn: "রোগীর শারীরিক ও মানসিক লক্ষণ গভীরভাবে বিশ্লেষণ করে দীর্ঘমেয়াদী ও সাম্প্রতিক সকল রোগের সঠিক হোমিওপ্যাথিক নিদান।",
+    icon: "Stethoscope",
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80",
+    order: 1,
+    isActive: true,
+    category: "সাধারণ চিকিৎসা"
+  },
+  {
+    id: "t-2",
+    titleEn: "Infertility / Difficulty Conceiving",
+    titleBn: "বন্ধ্যাত্ব - সন্তান না হওয়া",
+    descriptionEn: "Specialized holistic homeopathic treatments for male and female reproductive health.",
+    descriptionBn: "নারী ও পুরুষের বন্ধ্যাত্ব, শুক্রাণুজনিত সমস্যা ও ডিম্বাশয়ের কার্যকারিতা স্বাভাবিকীকরণে প্রমাণিত হোমিওপ্যাথিক চিকিৎসা।",
+    icon: "HeartPulse",
+    imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80",
+    order: 2,
+    isActive: true,
+    category: "প্রজনন স্বাস্থ্য"
+  },
+  {
+    id: "t-3",
+    titleEn: "Maternal Healthcare & Pregnancy Care",
+    titleBn: "গর্ভকালীন মায়ের চিকিৎসা",
+    descriptionEn: "Safe, natural, and gentle care for expecting mothers and newborn vitality without side effects.",
+    descriptionBn: "গর্ভকালীন বমি, শারীরিক দুর্বলতা ও প্রসবকালীন জটিলতা নিরসনে নিরাপদ ও পার্শ্বরোগহীন যত্ন।",
+    icon: "Baby",
+    imageUrl: "https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=600&q=80",
+    order: 3,
+    isActive: true,
+    category: "মাতৃস্বাস্থ্য"
+  },
+  {
+    id: "t-4",
+    titleEn: "Breast & Uterine Tumors / Cancer",
+    titleBn: "স্তন ও জরায়ুর টিউমার ও ক্যান্সার",
+    descriptionEn: "Supportive homeopathic constitutional therapeutics for benign tumors and cysts.",
+    descriptionBn: "স্তন ও জরায়ুর টিউমার, সিস্ট ও জটিল স্ত্রীরোগে সূক্ষ্মমাত্রার নির্ভরযোগ্য প্রাকৃতিক চিকিৎসা।",
+    icon: "ShieldAlert",
+    imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80",
+    order: 4,
+    isActive: true,
+    category: "স্ত্রীরোগ ও টিউমার"
+  },
+  {
+    id: "t-5",
+    titleEn: "Hormonal Imbalances",
+    titleBn: "হরমোনজনিত সমস্যা",
+    descriptionEn: "Thyroid, PCOS, hormonal acne, and metabolic equilibrium restoration through tailored homeopathy.",
+    descriptionBn: "থাইরয়েড, পিসিওএস (PCOS), ওজন বৃদ্ধি ও অস্বাভাবিক হরমোন ভারসাম্যহীনতায় দীর্ঘস্থায়ী সমাধান।",
+    icon: "Activity",
+    imageUrl: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80",
+    order: 5,
+    isActive: true,
+    category: "হরমোন"
+  },
+  {
+    id: "t-6",
+    titleEn: "Menstrual Problems & White Discharge Issues",
+    titleBn: "মাসিক ও শ্বেতস্রাব সংক্রান্ত সমস্যা",
+    descriptionEn: "Effective relief from irregular cycles, dysmenorrhea, and chronic leukorrhea.",
+    descriptionBn: "অনিয়মিত ঋতুস্রাব, অতিরিক্ত রক্তস্রাব, প্রচণ্ড তলপেটে ব্যথা এবং দীর্ঘদিনের শ্বেতস্রাবের স্থায়ী নিরাময়।",
+    icon: "Sparkles",
+    imageUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80",
+    order: 6,
+    isActive: true,
+    category: "স্ত্রীরোগ"
+  },
+  {
+    id: "t-7",
+    titleEn: "Male Sexual Weakness & Testicular Issues",
+    titleBn: "যৌন দুর্বলতা ও অণ্ডকোষজনিত সমস্যা",
+    descriptionEn: "Confidential and evidence-based homeopathic solutions for male reproductive and vitality concerns.",
+    descriptionBn: "পুরুষের শারীরিক ও মানসিক ক্লান্তি, শুক্রক্ষয় ও অণ্ডকোষের প্রদাহে পূর্ণ গোপনীয়তায় স্থায়ী সমাধান।",
+    icon: "ShieldCheck",
+    imageUrl: "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=600&q=80",
+    order: 7,
+    isActive: true,
+    category: "পুরুষ স্বাস্থ্য"
+  },
+  {
+    id: "t-8",
+    titleEn: "Piles, Fissures & Fistula",
+    titleBn: "অর্শ, গেঁজ ও পাইলস",
+    descriptionEn: "Pain-free, non-surgical homeopathic remedy for hemorrhoids, fissures, and anal discomfort.",
+    descriptionBn: "কোনরূপ অপারেশন বা কাটার ভয় ছাড়া পাইলস, ফিসার ও রক্তক্ষরণজনিত ব্যথার আধুনিক হোমিওপ্যাথিক চিকিৎসা।",
+    icon: "PlusCircle",
+    imageUrl: "https://images.unsplash.com/photo-1583912267670-6575ad4e84b2?auto=format&fit=crop&w=600&q=80",
+    order: 8,
+    isActive: true,
+    category: "পাইলস ও মলদ্বার"
+  },
+  {
+    id: "t-9",
+    titleEn: "Skin Diseases",
+    titleBn: "চর্মরোগ",
+    descriptionEn: "Root-cause eradication of eczema, psoriasis, fungal infections, acne, and chronic dermatitis.",
+    descriptionBn: "একজিমা, সোরিয়াসিস, দাউদ, খোসপাঁচড়া ও ব্রণের রক্ত বিশুদ্ধিকরণ ভিত্তিক স্থায়ী চিকিৎসা।",
+    icon: "SunMedium",
+    imageUrl: "https://images.unsplash.com/photo-1512290900672-1f5597753e15?auto=format&fit=crop&w=600&q=80",
+    order: 9,
+    isActive: true,
+    category: "চর্মরোগ"
+  },
+  {
+    id: "t-10",
+    titleEn: "Tonsillitis",
+    titleBn: "টনসিল",
+    descriptionEn: "Strengthen respiratory immunity and avoid surgical tonsillectomy in children and adults.",
+    descriptionBn: "টনসিল ফুলে যাওয়া, গলায় ব্যথা ও ঘন ঘন ঠাণ্ডা লাগা থেকে অপারেশনবিহীন স্থায়ী মুক্তি।",
+    icon: "Thermometer",
+    imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80",
+    order: 10,
+    isActive: true,
+    category: "নাক, কান ও গলা"
+  },
+  {
+    id: "t-11",
+    titleEn: "Gallbladder & Kidney Stones",
+    titleBn: "পিত্তথলি ও কিডনি পাথর",
+    descriptionEn: "Non-invasive dissolution and natural evacuation of renal calculus and biliary conditions.",
+    descriptionBn: "অপারেশন ছাড়া কিডনি ও পিত্তথলির পাথর অপসারণে অত্যন্ত কার্যকরী হোমিওপ্যাথিক ঔষধ।",
+    icon: "FileText",
+    imageUrl: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?auto=format&fit=crop&w=600&q=80",
+    order: 11,
+    isActive: true,
+    category: "কিডনি ও পাথর"
+  },
+  {
+    id: "t-12",
+    titleEn: "Warts",
+    titleBn: "আঁচিল",
+    descriptionEn: "Painless, scar-free removal of warts, skin tags, and verruca vulgaris through internal remedies.",
+    descriptionBn: "মুখ, গলা ও শরীরের যে কোন স্থানের আঁচিল পোড়ানো বা দাগ ছাড়া ভেতর থেকে স্থায়ীভাবে ঝরে পড়ে।",
+    icon: "Zap",
+    imageUrl: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?auto=format&fit=crop&w=600&q=80",
+    order: 12,
+    isActive: true,
+    category: "চর্মরোগ"
+  },
+  {
+    id: "t-13",
+    titleEn: "Nasal Polyps",
+    titleBn: "নাকে পলিফাস",
+    descriptionEn: "Natural shrinkage of nasal polyps and relief from sinus congestion, sneezing, and breathing blocks.",
+    descriptionBn: "নাকে মাংস বৃদ্ধি বা পলিফাস, হাঁচি এবং শ্বাসকষ্টের কোনো ধরনের অপারেশন ছাড়াই সফল চিকিৎসা।",
+    icon: "Wind",
+    imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80",
+    order: 13,
+    isActive: true,
+    category: "নাক, কান ও গলা"
+  }
+];
+
+export const defaultArticles: Article[] = [
+  {
+    id: "art-1",
+    titleBn: "হোমিওপ্যাথিক চিকিৎসার মূলনীতি ও জটিল রোগের স্থায়ী নিরাময়",
+    titleEn: "Principles of Homeopathy in Chronic Disease Management",
+    slug: "principles-of-homeopathy",
+    category: "স্বাস্থ্য দর্শন",
+    excerptBn: "হোমিওপ্যাথি কেবলমাত্র রোগের বাহ্যিক লক্ষণ দূর করে না, বরং রোগীর রোগ প্রতিরোধ ক্ষমতা জাগিয়ে মূল থেকে ব্যাধি নির্মূল করে।",
+    contentBn: `হোমিওপ্যাথি একটি বিজ্ঞানভিত্তিক ও প্রাকৃতিক চিকিৎসা পদ্ধতি যা ১৭৯৬ সালে জার্মান চিকিৎসক ডা. স্যামুয়েল হ্যানিম্যান আবিষ্কার করেন। এর মূল নীতি হলো 'সদৃশ সদৃশকে আরোগ্য করে' (Similia Similibus Curentur)।
+
+জটিল ও দীর্ঘদিনের পুরনো রোগ যেমন হাঁপানি, একজিমা, বাতব্যথা বা গ্যাস্ট্রিকের ক্ষেত্রে এলোপ্যাথিক ওষুধ সাময়িক উপশম দিতে পারে, কিন্তু পূর্ণ নিরাময় অনেক ক্ষেত্রেই কঠিন হয়। হোমিওপ্যাথি রোগীর শারীরিক লক্ষণের পাশাপাশি মানসিক অবস্থা, খাদ্যাভ্যাস এবং জীবনধারা বিচার করে সমগ্র সত্ত্বার চিকিৎসা করে।
+
+বাংলাদেশ হোমিও হলে ডা. তামজীদ হোসেনের তত্ত্বাবধানে প্রতিটি রোগীকে দীর্ঘ সময় দিয়ে কেস স্টাডি করা হয় এবং সর্বোচ্চ মানের জার্মান ও খাঁটি ওষুধ নির্বাচন করা হয়।`,
+    imageUrl: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=800&q=80",
+    isPublished: true,
+    createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 86400000).toISOString()
+  },
+  {
+    id: "art-2",
+    titleBn: "নারী ও পুরুষের বন্ধ্যাত্ব সমস্যায় হোমিওপ্যাথির কার্যকর ভূমিকা",
+    titleEn: "Role of Homeopathy in Overcoming Infertility",
+    slug: "homeopathy-infertility-treatment",
+    category: "প্রজনন স্বাস্থ্য",
+    excerptBn: "সন্তানহীনতা একটি অত্যন্ত বেদনাদায়ক সামাজিক সমস্যা। প্রাকৃতিক ও নিরাপদ হোমিওপ্যাথিক চিকিৎসায় হাজারো দম্পতি সুফল পেয়েছেন।",
+    contentBn: `দাম্পত্য জীবনে বন্ধ্যাত্ব নারী ও পুরুষ উভয়ের শারীরিক কারণের ওপর নির্ভর করতে পারে। নারীদের ক্ষেত্রে ডিম্বাশয়ে সিস্ট (PCOS), ফেলোপিয়ান টিউব বন্ধ থাকা, অনিয়মিত ঋতুস্রাব বা জরায়ুর দুর্বলতা অন্যতম কারণ। অন্যদিকে পুরুষদের ক্ষেত্রে শুক্রাণুর সংখ্যা কম (Oligospermia), গতিশীলতার অভাব (Asthenozoospermia) বা ইনফেকশন দায়ী হতে পারে।
+
+হোমিওপ্যাথি হরমোনের স্বাভাবিক ভারসাম্য ফিরিয়ে আনে, প্রজনন অঙ্গের রক্ত সঞ্চালন বৃদ্ধি করে এবং কোন প্রকার কৃত্রিম হরমোনের পার্শ্বপ্রতিক্রিয়া ছাড়াই স্বাভাবিক গর্ভধারণে সহায়তা করে। সঠিক সময়ে অভিজ্ঞ চিকিৎসকের পরামর্শ নিলে চমৎকার ফলাফল পাওয়া যায়।`,
+    imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
+    isPublished: true,
+    createdAt: new Date(Date.now() - 14 * 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 5 * 86400000).toISOString()
+  },
+  {
+    id: "art-3",
+    titleBn: "পাইলস ও ফিসারে অপারেশন ছাড়া আধুনিক হোমিওপ্যাথিক চিকিৎসা",
+    titleEn: "Non-Surgical Homeopathic Treatment for Piles & Fissures",
+    slug: "piles-fissure-homeopathy",
+    category: "পাইলস ও মলদ্বার",
+    excerptBn: "অপারেশন করার পরেও অনেকের ক্ষেত্রে পাইলস পুনরায় দেখা দেয়। জেনে নিন কীভাবে হোমিওপ্যাথি অপারেশন ছাড়াই ব্যথাহীন নিরাময় দেয়।",
+    contentBn: `পাইলস বা অর্শ এমন একটি রোগ যা নিয়ে রোগীরা লোকলজ্জার কারণে অনেক সময় দেরিতে চিকিৎসকের কাছে আসেন। মলত্যাগে কষ্ট, রক্তক্ষরণ, চুলকানি ও মলদ্বারে মাংসপিণ্ড ঝুলে পড়া এর প্রধান লক্ষণ। অতিরিক্ত তেল-মশলাযুক্ত খাবার, দীর্ঘদিনের কোষ্ঠকাঠিন্য ও পানি কম পান করা এর প্রধান কারণ।
+
+হোমিওপ্যাথিক চিকিৎসা পেটের হজমশক্তি ঠিক করে, মল নরম ও স্বাভাবিক করে এবং মলদ্বারের স্ফীত শিরাগুলিকে সংকুচিত করে চিরতরে নিরাময় করে। কোনো রকম কাটাছেঁড়া বা ব্যথাদায়ক ড্রেসিং ছাড়াই রোগী স্বাভাবিক জীবনযাপন করতে পারেন।`,
+    imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
+    isPublished: true,
+    createdAt: new Date(Date.now() - 21 * 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - 10 * 86400000).toISOString()
+  }
+];
+
+export const defaultAppointments: Appointment[] = [
+  {
+    id: "apt-1",
+    fullName: "মো: রফিকুল ইসলাম",
+    phone: "01712-345678",
+    serviceName: "পরামর্শ ও চিকিৎসা",
+    problemDescription: "গত ৬ মাস যাবৎ পেটের গ্যাস্ট্রিক ও হজমে মারাত্মক সমস্যা। খাবার খাওয়ার পর বুক জ্বালাপোড়া করে।",
+    preferredChamber: "মতলব চেম্বার",
+    preferredDate: "শনিবার",
+    status: "pending",
+    createdAt: new Date(Date.now() - 1200000).toISOString()
+  },
+  {
+    id: "apt-2",
+    fullName: "মোসাম্মৎ ফাতেমা বেগম",
+    phone: "01819-876543",
+    serviceName: "হরমোনজনিত সমস্যা",
+    problemDescription: "থাইরয়েড ও অনিয়মিত মাসিকের সমস্যা নিয়ে পরামর্শ ও চিকিৎসা গ্রহণ করতে চাই।",
+    preferredChamber: "হাজীগঞ্জ চেম্বার",
+    preferredDate: "সোমবার",
+    status: "contacted",
+    createdAt: new Date(Date.now() - 7200000).toISOString()
+  }
+];
+
+interface DatabaseSchema {
+  siteSettings: SiteSettings;
+  doctorProfile: DoctorProfile;
+  chambers: Chamber[];
+  treatments: Treatment[];
+  articles: Article[];
+  appointments: Appointment[];
+}
+
+let inMemoryData: DatabaseSchema | null = null;
+
+// Read JSON database
+function readDatabase(): DatabaseSchema {
+  if (inMemoryData) return inMemoryData;
+
+  if (fs.existsSync(DATA_FILE)) {
+    try {
+      const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+      inMemoryData = JSON.parse(raw);
+      return inMemoryData!;
+    } catch (e) {
+      console.error('Failed to parse clinic_db.json, using defaults', e);
+    }
+  }
+
+  // Seed default data
+  inMemoryData = {
+    siteSettings: defaultSiteSettings,
+    doctorProfile: defaultDoctorProfile,
+    chambers: defaultChambers,
+    treatments: defaultTreatments,
+    articles: defaultArticles,
+    appointments: defaultAppointments
+  };
+  saveDatabase(inMemoryData);
+  return inMemoryData;
+}
+
+// Write JSON database
+function saveDatabase(data: DatabaseSchema) {
+  inMemoryData = data;
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Failed to write clinic_db.json', err);
+  }
+}
+
+// User Interface
+export interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  salt: string;
+  role: 'admin' | 'user';
+  createdAt: string;
+  updatedAt: string;
+}
+
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
+
+function readUsers(): AppUser[] {
+  if (fs.existsSync(USERS_FILE)) {
+    try {
+      return JSON.parse(fs.readFileSync(USERS_FILE, 'utf-8'));
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function saveUsers(users: AppUser[]) {
+  try {
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to save users.json', e);
+  }
+}
+
+// Mongoose User Schema
+const userSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  passwordHash: { type: String, required: true },
+  salt: { type: String, required: true },
+  role: { type: String, enum: ['admin', 'user'], default: 'user' },
+  createdAt: { type: String, default: () => new Date().toISOString() },
+  updatedAt: { type: String, default: () => new Date().toISOString() }
+}, { collection: 'users' });
+
+export let UserModel: mongoose.Model<any> | null = null;
+try {
+  UserModel = mongoose.models.User || mongoose.model('User', userSchema);
+} catch {
+  // Ignore re-compilation
+}
+
+// MongoDB setup
+let isMongoConnected = false;
+export async function initMongoDB() {
+  const uri = process.env.MONGODB_URI || process.env.mongodbUri || "mongodb+srv://bd-homio:bd-homio@cluster0.pjgdpeb.mongodb.net/?appName=Cluster0";
+  if (!uri) {
+    console.log('[DB] No MONGODB_URI provided. Operating on high-reliability persistent local JSON store.');
+    return;
+  }
+  try {
+    await mongoose.connect(uri, { serverSelectionTimeoutMS: 8000, dbName: 'bangladesh_homoeo_hall' });
+    isMongoConnected = true;
+    console.log('[DB] Successfully connected to MongoDB Atlas (bangladesh_homoeo_hall).');
+
+    // Ensure default admin user is seeded or updated
+    const adminEmail = (process.env.ADMIN_EMAIL || "khalekbiton1977@gmail.com").toLowerCase().trim();
+    const existingAdmin = await db.findUserByEmail(adminEmail);
+    if (!existingAdmin) {
+      const salt = "bhh_admin_salt_2026";
+      const crypto = await import('crypto');
+      const hash = crypto.pbkdf2Sync("drTamjid2026!", salt, 10000, 64, 'sha512').toString('hex');
+      await db.createUser({
+        id: "owner-dr-tamjid",
+        name: "ডা. তামজীদ হোসেন (Dr. Tamjid Hossain)",
+        email: adminEmail,
+        passwordHash: hash,
+        salt: salt,
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      console.log('[DB] Pre-seeded Dr. Tamjid Hossain admin account in MongoDB.');
+    } else if (existingAdmin.role !== 'admin') {
+      await db.updateUserRole(adminEmail, 'admin');
+    }
+  } catch (err) {
+    console.warn('[DB] MongoDB connection attempt failed, falling back safely to local persistent store:', err);
+  }
+}
+
+// Data access operations
+export const db = {
+  getSiteSettings: async (): Promise<SiteSettings> => {
+    return readDatabase().siteSettings;
+  },
+  updateSiteSettings: async (settings: Partial<SiteSettings>): Promise<SiteSettings> => {
+    const data = readDatabase();
+    data.siteSettings = { ...data.siteSettings, ...settings };
+    saveDatabase(data);
+    return data.siteSettings;
+  },
+
+  getDoctorProfile: async (): Promise<DoctorProfile> => {
+    return readDatabase().doctorProfile;
+  },
+  updateDoctorProfile: async (profile: Partial<DoctorProfile>): Promise<DoctorProfile> => {
+    const data = readDatabase();
+    data.doctorProfile = { ...data.doctorProfile, ...profile };
+    saveDatabase(data);
+    return data.doctorProfile;
+  },
+
+  getChambers: async (): Promise<Chamber[]> => {
+    return readDatabase().chambers;
+  },
+  updateChamber: async (id: string, chamberData: Partial<Chamber>): Promise<Chamber | null> => {
+    const data = readDatabase();
+    const index = data.chambers.findIndex(c => c.id === id);
+    if (index === -1) return null;
+    data.chambers[index] = { ...data.chambers[index], ...chamberData };
+    saveDatabase(data);
+    return data.chambers[index];
+  },
+
+  getTreatments: async (onlyActive = false): Promise<Treatment[]> => {
+    const treatments = readDatabase().treatments;
+    const sorted = [...treatments].sort((a, b) => (a.order || 0) - (b.order || 0));
+    return onlyActive ? sorted.filter(t => t.isActive) : sorted;
+  },
+  getTreatmentById: async (id: string): Promise<Treatment | null> => {
+    const treatments = readDatabase().treatments;
+    return treatments.find(t => t.id === id) || null;
+  },
+  createTreatment: async (treatment: Omit<Treatment, 'id'>): Promise<Treatment> => {
+    const data = readDatabase();
+    const newTreatment: Treatment = {
+      ...treatment,
+      id: 't-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+      order: treatment.order || (data.treatments.length + 1),
+      isActive: treatment.isActive !== false
+    };
+    data.treatments.push(newTreatment);
+    saveDatabase(data);
+    return newTreatment;
+  },
+  updateTreatment: async (id: string, updates: Partial<Treatment>): Promise<Treatment | null> => {
+    const data = readDatabase();
+    const index = data.treatments.findIndex(t => t.id === id);
+    if (index === -1) return null;
+    data.treatments[index] = { ...data.treatments[index], ...updates };
+    saveDatabase(data);
+    return data.treatments[index];
+  },
+  deleteTreatment: async (id: string): Promise<boolean> => {
+    const data = readDatabase();
+    const initialLen = data.treatments.length;
+    data.treatments = data.treatments.filter(t => t.id !== id);
+    if (data.treatments.length !== initialLen) {
+      saveDatabase(data);
+      return true;
+    }
+    return false;
+  },
+  reorderTreatments: async (orderedIds: string[]): Promise<Treatment[]> => {
+    const data = readDatabase();
+    data.treatments.forEach(treatment => {
+      const idx = orderedIds.indexOf(treatment.id);
+      if (idx !== -1) {
+        treatment.order = idx + 1;
+      }
+    });
+    saveDatabase(data);
+    return data.treatments.sort((a, b) => a.order - b.order);
+  },
+
+  getArticles: async (onlyPublished = false): Promise<Article[]> => {
+    const articles = readDatabase().articles;
+    const sorted = [...articles].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return onlyPublished ? sorted.filter(a => a.isPublished) : sorted;
+  },
+  getArticleById: async (idOrSlug: string): Promise<Article | null> => {
+    const articles = readDatabase().articles;
+    return articles.find(a => a.id === idOrSlug || a.slug === idOrSlug) || null;
+  },
+  createArticle: async (article: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>): Promise<Article> => {
+    const data = readDatabase();
+    const now = new Date().toISOString();
+    const slug = article.slug || ('art-' + Date.now());
+    const newArticle: Article = {
+      ...article,
+      id: 'art-' + Date.now(),
+      slug,
+      createdAt: now,
+      updatedAt: now
+    };
+    data.articles.unshift(newArticle);
+    saveDatabase(data);
+    return newArticle;
+  },
+  updateArticle: async (id: string, updates: Partial<Article>): Promise<Article | null> => {
+    const data = readDatabase();
+    const index = data.articles.findIndex(a => a.id === id);
+    if (index === -1) return null;
+    data.articles[index] = {
+      ...data.articles[index],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    saveDatabase(data);
+    return data.articles[index];
+  },
+  deleteArticle: async (id: string): Promise<boolean> => {
+    const data = readDatabase();
+    const initialLen = data.articles.length;
+    data.articles = data.articles.filter(a => a.id !== id);
+    if (data.articles.length !== initialLen) {
+      saveDatabase(data);
+      return true;
+    }
+    return false;
+  },
+
+  getAppointments: async (): Promise<Appointment[]> => {
+    const appointments = readDatabase().appointments;
+    return [...appointments].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+  createAppointment: async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'status'>): Promise<Appointment> => {
+    const data = readDatabase();
+    const newAppointment: Appointment = {
+      ...appointment,
+      id: 'apt-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+    data.appointments.unshift(newAppointment);
+    saveDatabase(data);
+    return newAppointment;
+  },
+  updateAppointmentStatus: async (id: string, status: 'pending' | 'contacted' | 'completed', notes?: string): Promise<Appointment | null> => {
+    const data = readDatabase();
+    const index = data.appointments.findIndex(a => a.id === id);
+    if (index === -1) return null;
+    data.appointments[index].status = status;
+    if (notes !== undefined) {
+      data.appointments[index].notes = notes;
+    }
+    saveDatabase(data);
+    return data.appointments[index];
+  },
+  deleteAppointment: async (id: string): Promise<boolean> => {
+    const data = readDatabase();
+    const initialLen = data.appointments.length;
+    data.appointments = data.appointments.filter(a => a.id !== id);
+    if (data.appointments.length !== initialLen) {
+      saveDatabase(data);
+      return true;
+    }
+    return false;
+  },
+
+  // User Management with MongoDB Live Role Detection
+  findUserByEmail: async (email: string): Promise<AppUser | null> => {
+    const cleanEmail = email.toLowerCase().trim();
+    if (isMongoConnected && UserModel) {
+      try {
+        const doc = await UserModel.findOne({ email: cleanEmail }).lean();
+        if (doc) {
+          return {
+            id: (doc as any).id || (doc as any)._id?.toString(),
+            name: (doc as any).name,
+            email: (doc as any).email,
+            passwordHash: (doc as any).passwordHash,
+            salt: (doc as any).salt,
+            role: (doc as any).role || 'user',
+            createdAt: (doc as any).createdAt,
+            updatedAt: (doc as any).updatedAt
+          };
+        }
+      } catch (e) {
+        console.error('[DB] Mongo findUserByEmail error:', e);
+      }
+    }
+    const users = readUsers();
+    return users.find(u => u.email.toLowerCase() === cleanEmail) || null;
+  },
+
+  findUserById: async (id: string): Promise<AppUser | null> => {
+    if (isMongoConnected && UserModel) {
+      try {
+        const doc = await UserModel.findOne({ id }).lean();
+        if (doc) {
+          return {
+            id: (doc as any).id || (doc as any)._id?.toString(),
+            name: (doc as any).name,
+            email: (doc as any).email,
+            passwordHash: (doc as any).passwordHash,
+            salt: (doc as any).salt,
+            role: (doc as any).role || 'user',
+            createdAt: (doc as any).createdAt,
+            updatedAt: (doc as any).updatedAt
+          };
+        }
+      } catch (e) {
+        console.error('[DB] Mongo findUserById error:', e);
+      }
+    }
+    const users = readUsers();
+    return users.find(u => u.id === id) || null;
+  },
+
+  createUser: async (user: AppUser): Promise<AppUser> => {
+    if (isMongoConnected && UserModel) {
+      try {
+        await UserModel.create(user);
+      } catch (e) {
+        console.error('[DB] Mongo createUser error:', e);
+      }
+    }
+    const users = readUsers();
+    users.push(user);
+    saveUsers(users);
+    return user;
+  },
+
+  updateUserRole: async (emailOrId: string, role: 'admin' | 'user'): Promise<boolean> => {
+    const clean = emailOrId.toLowerCase().trim();
+    if (isMongoConnected && UserModel) {
+      try {
+        await UserModel.updateOne(
+          { $or: [{ email: clean }, { id: emailOrId }] },
+          { $set: { role, updatedAt: new Date().toISOString() } }
+        );
+      } catch (e) {
+        console.error('[DB] Mongo updateUserRole error:', e);
+      }
+    }
+    const users = readUsers();
+    const u = users.find(x => x.email.toLowerCase() === clean || x.id === emailOrId);
+    if (u) {
+      u.role = role;
+      u.updatedAt = new Date().toISOString();
+      saveUsers(users);
+      return true;
+    }
+    return false;
+  },
+
+  getAllUsers: async (): Promise<Omit<AppUser, 'passwordHash' | 'salt'>[]> => {
+    if (isMongoConnected && UserModel) {
+      try {
+        const docs = await UserModel.find({}, '-passwordHash -salt').lean();
+        if (docs && docs.length > 0) {
+          return docs.map((d: any) => ({
+            id: d.id || d._id?.toString(),
+            name: d.name,
+            email: d.email,
+            role: d.role || 'user',
+            createdAt: d.createdAt,
+            updatedAt: d.updatedAt
+          }));
+        }
+      } catch (e) {
+        console.error('[DB] Mongo getAllUsers error:', e);
+      }
+    }
+    const users = readUsers();
+    return users.map(({ passwordHash, salt, ...u }) => u);
+  }
+};
