@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Treatment, Chamber } from '../types.js';
-import { Calendar, Phone, Lock, CheckCircle, AlertCircle, Loader2, Sparkles, User, FileText, MapPin } from 'lucide-react';
+import { Treatment, Chamber, DoctorProfile } from '../types.js';
+import { Calendar, Phone, Lock, CheckCircle, AlertCircle, Loader2, Sparkles, User, FileText, MapPin, Stethoscope } from 'lucide-react';
 
 interface AppointmentSectionProps {
   treatments: Treatment[];
   chambers: Chamber[];
+  doctors?: DoctorProfile[];
   preselectedService?: string;
   preselectedChamber?: string;
+  preselectedDoctor?: string;
 }
 
 export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
   treatments,
   chambers,
+  doctors = [],
   preselectedService = '',
-  preselectedChamber = ''
+  preselectedChamber = '',
+  preselectedDoctor = ''
 }) => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [serviceName, setServiceName] = useState(preselectedService);
   const [preferredChamber, setPreferredChamber] = useState(preselectedChamber || 'মতলব চেম্বার');
+  const [preferredDoctor, setPreferredDoctor] = useState(preselectedDoctor || (doctors[0]?.nameBn || 'ডা. তামজীদ হোসেন'));
   const [problemDescription, setProblemDescription] = useState('');
   
   const [loading, setLoading] = useState(false);
@@ -37,6 +42,12 @@ export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
       setPreferredChamber(preselectedChamber);
     }
   }, [preselectedChamber]);
+
+  useEffect(() => {
+    if (preselectedDoctor) {
+      setPreferredDoctor(preselectedDoctor);
+    }
+  }, [preselectedDoctor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +80,7 @@ export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
           phone: phone.trim(),
           serviceName,
           preferredChamber,
+          preferredDoctor,
           problemDescription: problemDescription.trim()
         })
       });
@@ -254,23 +266,25 @@ export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      {/* Service Dropdown */}
+                      {/* Preferred Doctor */}
                       <div>
                         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          সেবার নাম *
+                          পছন্দের চিকিৎসক
                         </label>
                         <select
-                          required
-                          value={serviceName}
-                          onChange={(e) => setServiceName(e.target.value)}
+                          value={preferredDoctor}
+                          onChange={(e) => setPreferredDoctor(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm bg-slate-50/50"
                         >
-                          <option value="">সেবা নির্বাচন করুন...</option>
-                          {treatments.map((t) => (
-                            <option key={t.id} value={t.titleBn}>
-                              {t.titleBn}
-                            </option>
-                          ))}
+                          {doctors && doctors.length > 0 ? (
+                            doctors.map((d) => (
+                              <option key={d.id || d.nameBn} value={d.nameBn}>
+                                {d.nameBn} ({d.designationBn || d.roleBn})
+                              </option>
+                            ))
+                          ) : (
+                            <option value="ডা. তামজীদ হোসেন">ডা. তামজীদ হোসেন (প্রিন্সিপাল)</option>
+                          )}
                         </select>
                       </div>
 
@@ -291,6 +305,26 @@ export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
                           ))}
                         </select>
                       </div>
+                    </div>
+
+                    {/* Service Dropdown */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        সেবার নাম *
+                      </label>
+                      <select
+                        required
+                        value={serviceName}
+                        onChange={(e) => setServiceName(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm bg-slate-50/50"
+                      >
+                        <option value="">সেবা নির্বাচন করুন...</option>
+                        {treatments.map((t) => (
+                          <option key={t.id} value={t.titleBn}>
+                            {t.titleBn}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     {/* Problem Description */}

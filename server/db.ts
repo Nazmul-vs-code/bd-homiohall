@@ -36,6 +36,7 @@ export const defaultSiteSettings: SiteSettings = {
 };
 
 export const defaultDoctorProfile: DoctorProfile = {
+  id: "dr-tamjid-hossain",
   nameBn: "ডা. তামজীদ হোসেন",
   nameEn: "Dr. Tamjid Hossain",
   qualifications: "MBBS, DHMS (Homeopathy), PDT (Medicine)",
@@ -46,8 +47,74 @@ export const defaultDoctorProfile: DoctorProfile = {
   roleBn: "প্রধান চিকিৎসক ও কনসালট্যান্ট, বাংলাদেশ হোমিও হল",
   bioBn: "ডা. তামজীদ হোসেন দীর্ঘ অভিজ্ঞতাসম্পন্ন একজন বিশিষ্ট হোমিওপ্যাথিক চিকিৎসক ও শিক্ষাবিদ। তিনি আধুনিক রোগ নির্ণয় ও ক্লাসিক্যাল হোমিওপ্যাথির সমন্বয়ে জটিল ও দুরারোগ্য ব্যাধির চিকিৎসা দিয়ে আসছেন। প্রতিটি রোগীকে পর্যাপ্ত সময় দিয়ে শারীরিক, মানসিক ও সামগ্রিক লক্ষণের ভিত্তিতে ব্যক্তিগতকৃত ওষুধ নির্বাচন করেন।",
   imageUrl: "/dr-tamjid-hossain.jpg",
-  experienceYears: 18
+  experienceYears: 18,
+  phones: ["+88 01714-990001", "+88 01614-990001"],
+  specialties: ["জটিল ও পুরাতন ব্যাধি", "বাতব্যথা ও আর্থ্রাইটিস", "হাঁপানি ও অ্যালার্জি", "গ্যাস্ট্রিক ও আলসার"],
+  isLead: true
 };
+
+export const defaultDoctors: DoctorProfile[] = [
+  defaultDoctorProfile,
+  {
+    id: "dr-ashraf-ali",
+    nameBn: "ডা. মোঃ আশরাফ আলী",
+    nameEn: "Dr. Md. Ashraf Ali",
+    qualifications: "এমএ, ডিএইচএমএস (হোমিওপ্যাথি), ডিইউএমএস (ইউনানী)",
+    registrationNo: "চিকিৎসক রেজিঃ নং- ১২৩৫৭ (হোমিওপ্যাথি), ১১১১ (ইউনানী)",
+    designation: "Assistant Professor, Adarsha Homeopathic Medical College & Hospital, Chandpur",
+    designationBn: "সহকারী অধ্যাপক, আদর্শ হোমিওপ্যাথিক মেডিকেল কলেজ ও হাসপাতাল, খলিশাডুলী, চাঁদপুর।",
+    role: "Homeopathic Physician & Consultant",
+    roleBn: "হোমিওপ্যাথিক চিকিৎসক ও পরামর্শদাতা, বাংলাদেশ হোমিও ক্লিনিক",
+    bioBn: "ডা. মোঃ আশরাফ আলী দীর্ঘ অভিজ্ঞতাসম্পন্ন সহকারী অধ্যাপক ও হোমিওপ্যাথিক চিকিৎসক। তিনি বন্ধ্যাত্ব (সন্তান না হওয়া), গর্ভকালীন মায়ের চিকিৎসা, স্তন ও জরায়ুর টিউমার, হরমোন সমস্যা, পাইলস, চর্মরোগ, টনসিল ও কিডনি পাথরের মতো জটিল ও পুরনো রোগের বিশেষজ্ঞ পরামর্শ ও আধুনিক চিকিৎসা সেবা দিয়ে আসছেন।",
+    imageUrl: "/dr-ashraf-ali.jpg",
+    visitingCardUrl: "/dr-ashraf-ali-card.png",
+    experienceYears: 15,
+    phones: ["01743 902 773", "01712 846 478"],
+    specialties: [
+      "পরামর্শ ও সাধারণ স্বাস্থ্য",
+      "বন্ধ্যাত্ব (সন্তান না হওয়া)",
+      "গর্ভকালীন মায়ের চিকিৎসা",
+      "স্তন ও জরায়ুর টিউমার ও ক্যান্সার",
+      "হরমোন জনিত সমস্যা",
+      "মাসিক ও সাদাস্রাব সম্পর্কিত সমস্যা",
+      "যৌন দুর্বলতা ও অণ্ডকোষ জনিত সমস্যা",
+      "অর্শ, গেঁজ ও পাইলস্",
+      "টিউমার ও সিস্ট",
+      "চর্মরোগ",
+      "টনসিল",
+      "পিত্ত ও কিডনি পাথর",
+      "নাকে পলিপাস",
+      "আঁচিল"
+    ],
+    chambers: [
+      {
+        id: "ashraf-chandpur-chamber",
+        nameEn: "Chandpur Chamber",
+        nameBn: "চাঁদপুর চেম্বার",
+        addressEn: "Faysal Shopping Complex (2nd Floor), beside Social Islami Bank, Bus Stand, Chandpur",
+        addressBn: "ফয়সাল শপিং কমপ্লেক্স (২য় তলা), সোশ্যাল ইসলামী ব্যাংকের পাশে, বাস স্ট্যান্ড, চাঁদপুর।",
+        visitingDaysEn: "Everyday",
+        visitingDaysBn: "প্রতিদিন",
+        visitingHoursEn: "10:00 AM – 8:00 PM",
+        visitingHoursBn: "সকাল ১০ টা থেকে রাত ৮ টা পর্যন্ত",
+        phone: "01743 902 773, 01712 846 478"
+      },
+      {
+        id: "ashraf-matlab-chamber",
+        nameEn: "Matlab Chamber",
+        nameBn: "মতলব চেম্বার",
+        addressEn: "Ma Amena Tower (Ground Floor, under Islami Bank), Matlab Bazar, Matlab (South), Chandpur",
+        addressBn: "মা আমেনা টাওয়ার (ইসলামী ব্যাংকের নিচ তলা), মতলব বাজার, মতলব (দ:), চাঁদপুর।",
+        visitingDaysEn: "Every Tuesday",
+        visitingDaysBn: "প্রতি মঙ্গলবার",
+        visitingHoursEn: "9:00 AM – 1:00 PM",
+        visitingHoursBn: "সকাল ০৯টা থেকে দুপুর ০১টা পর্যন্ত (নির্ধারিত দিনে আসার পূর্বে যোগাযোগ করে আসবেন)",
+        phone: "01743 902 773, 01712 846 478"
+      }
+    ],
+    isLead: false
+  }
+];
 
 export const defaultChambers: Chamber[] = [
   {
@@ -315,6 +382,7 @@ export const defaultAppointments: Appointment[] = [
 interface DatabaseSchema {
   siteSettings: SiteSettings;
   doctorProfile: DoctorProfile;
+  doctors: DoctorProfile[];
   chambers: Chamber[];
   treatments: Treatment[];
   articles: Article[];
@@ -331,6 +399,10 @@ function readDatabase(): DatabaseSchema {
     try {
       const raw = fs.readFileSync(DATA_FILE, 'utf-8');
       inMemoryData = JSON.parse(raw);
+      if (!inMemoryData!.doctors || inMemoryData!.doctors.length === 0) {
+        inMemoryData!.doctors = defaultDoctors;
+        saveDatabase(inMemoryData!);
+      }
       return inMemoryData!;
     } catch (e) {
       console.error('Failed to parse clinic_db.json, using defaults', e);
@@ -341,6 +413,7 @@ function readDatabase(): DatabaseSchema {
   inMemoryData = {
     siteSettings: defaultSiteSettings,
     doctorProfile: defaultDoctorProfile,
+    doctors: defaultDoctors,
     chambers: defaultChambers,
     treatments: defaultTreatments,
     articles: defaultArticles,
@@ -415,9 +488,9 @@ try {
 // MongoDB setup
 let isMongoConnected = false;
 export async function initMongoDB() {
-  const uri = process.env.MONGODB_URI || process.env.mongodbUri || "mongodb+srv://bd-homio:bd-homio@cluster0.pjgdpeb.mongodb.net/?appName=Cluster0";
+  const uri = process.env.MONGODB_URI || process.env.mongodbUri;
   if (!uri) {
-    console.log('[DB] No MONGODB_URI provided. Operating on high-reliability persistent local JSON store.');
+    console.log('[DB] No MONGODB_URI provided in environment variables. Operating securely on persistent local JSON store.');
     return;
   }
   try {
@@ -464,13 +537,81 @@ export const db = {
   },
 
   getDoctorProfile: async (): Promise<DoctorProfile> => {
-    return readDatabase().doctorProfile;
+    const data = readDatabase();
+    if (data.doctors && data.doctors.length > 0) {
+      return data.doctors[0];
+    }
+    return data.doctorProfile;
   },
   updateDoctorProfile: async (profile: Partial<DoctorProfile>): Promise<DoctorProfile> => {
     const data = readDatabase();
     data.doctorProfile = { ...data.doctorProfile, ...profile };
+    if (data.doctors && data.doctors.length > 0) {
+      data.doctors[0] = { ...data.doctors[0], ...profile };
+    }
     saveDatabase(data);
     return data.doctorProfile;
+  },
+
+  getDoctors: async (): Promise<DoctorProfile[]> => {
+    const data = readDatabase();
+    if (!data.doctors || data.doctors.length === 0) {
+      data.doctors = defaultDoctors;
+      saveDatabase(data);
+    }
+    return data.doctors;
+  },
+
+  getDoctorById: async (id: string): Promise<DoctorProfile | null> => {
+    const data = readDatabase();
+    const doctors = data.doctors || defaultDoctors;
+    return doctors.find(d => d.id === id || (d.nameEn && d.nameEn.toLowerCase().replace(/\s+/g, '-') === id)) || null;
+  },
+
+  createDoctor: async (doctor: DoctorProfile): Promise<DoctorProfile> => {
+    const data = readDatabase();
+    if (!data.doctors) data.doctors = [...defaultDoctors];
+    const newDoc: DoctorProfile = {
+      ...doctor,
+      id: doctor.id || 'dr-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+      imageUrl: doctor.imageUrl || '/dr-tamjid-hossain.jpg',
+      experienceYears: Number(doctor.experienceYears) || 5,
+      isLead: Boolean(doctor.isLead)
+    };
+    data.doctors.push(newDoc);
+    saveDatabase(data);
+    return newDoc;
+  },
+
+  updateDoctor: async (id: string, updates: Partial<DoctorProfile>): Promise<DoctorProfile | null> => {
+    const data = readDatabase();
+    if (!data.doctors) data.doctors = [...defaultDoctors];
+    const index = data.doctors.findIndex(d => d.id === id);
+    if (index === -1) return null;
+    data.doctors[index] = { ...data.doctors[index], ...updates };
+    // If updating the first/lead doctor, also sync doctorProfile
+    if (index === 0) {
+      data.doctorProfile = { ...data.doctorProfile, ...updates };
+    }
+    saveDatabase(data);
+    return data.doctors[index];
+  },
+
+  deleteDoctor: async (id: string): Promise<boolean> => {
+    const data = readDatabase();
+    if (!data.doctors) return false;
+    // Do not delete if only 1 doctor remains
+    if (data.doctors.length <= 1) return false;
+    const initialLen = data.doctors.length;
+    data.doctors = data.doctors.filter(d => d.id !== id);
+    if (data.doctors.length !== initialLen) {
+      if (data.doctors[0]) {
+        data.doctorProfile = data.doctors[0];
+      }
+      saveDatabase(data);
+      return true;
+    }
+    return false;
   },
 
   getChambers: async (): Promise<Chamber[]> => {

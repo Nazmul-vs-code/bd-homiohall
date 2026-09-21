@@ -1,21 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Treatment, Chamber } from '../types.js';
+import { Treatment, Chamber, DoctorProfile } from '../types.js';
 import { AppointmentSection } from '../components/AppointmentSection.js';
 import { Calendar, Phone, Clock, ShieldCheck, MapPin, CheckCircle2, Award } from 'lucide-react';
 
 interface AppointmentPageProps {
   treatments: Treatment[];
   chambers: Chamber[];
+  doctors?: DoctorProfile[];
   preselectedService?: string;
   preselectedChamber?: string;
+  preselectedDoctor?: string;
 }
 
 export const AppointmentPage: React.FC<AppointmentPageProps> = ({
   treatments,
   chambers,
+  doctors = [],
   preselectedService,
-  preselectedChamber
+  preselectedChamber,
+  preselectedDoctor
 }) => {
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -31,7 +35,7 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
             অনলাইনে ডাক্তারের সিরিয়াল বুকিং
           </h1>
           <p className="text-emerald-200 text-sm sm:text-base max-w-2xl leading-relaxed">
-            ডা. তামজীদ হোসেনের মতলব ও হাজীগঞ্জ চেম্বারের জন্য নিচের ফর্মটি পূরণ করে সহজ ও দ্রুত সিরিয়াল নিশ্চিত করুন।
+            অভিজ্ঞ চিকিৎসকবৃন্দের চেম্বারের সরাসরি সাক্ষাৎ ও সুপরামর্শের জন্য নিচের ফর্মটি পূরণ করে সহজ ও দ্রুত সিরিয়াল নিশ্চিত করুন।
           </p>
         </div>
       </div>
@@ -61,8 +65,10 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
         <AppointmentSection
           treatments={treatments}
           chambers={chambers}
+          doctors={doctors}
           preselectedService={preselectedService}
           preselectedChamber={preselectedChamber}
+          preselectedDoctor={preselectedDoctor}
         />
 
         {/* 3 Step Process Guide */}

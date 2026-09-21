@@ -278,9 +278,10 @@ async function startServer() {
   // Combined fast load for homepage
   app.get("/api/public/data", async (req, res) => {
     try {
-      const [siteSettings, doctorProfile, chambers, treatments, articles] = await Promise.all([
+      const [siteSettings, doctorProfile, doctors, chambers, treatments, articles] = await Promise.all([
         db.getSiteSettings(),
         db.getDoctorProfile(),
+        db.getDoctors(),
         db.getChambers(),
         db.getTreatments(true),
         db.getArticles(true)
@@ -290,12 +291,36 @@ async function startServer() {
         settings: siteSettings,
         doctorProfile,
         doctor: doctorProfile,
+        doctors: doctors || [doctorProfile],
         chambers,
         treatments,
         articles
       });
     } catch (err: any) {
       res.status(500).json({ error: "Failed to load clinic data", details: err.message });
+    }
+  });
+
+  // Public doctors
+  app.get("/api/public/doctors", async (req, res) => {
+    try {
+      const doctors = await db.getDoctors();
+      res.json(doctors);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/public/doctors/:id", async (req, res) => {
+    try {
+      const doctor = await db.getDoctorById(req.params.id);
+      if (!doctor) {
+        res.status(404).json({ error: "চিকিৎসক পাওয়া যায়নি।" });
+        return;
+      }
+      res.json(doctor);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
   });
 
@@ -579,7 +604,92 @@ async function startServer() {
     }
   });
 
-  // Doctor Profile Edit
+  // Doctors Management (Admin)
+  app.get("/api/admin/doctors", requireAdminAuth, async (req, res) => {
+    try {
+      const doctors = await db.getDoctors();
+      res.json(doctors);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/admin/doctors", requireAdminAuth, async (req, res) => {
+    try {
+      const {
+        nameBn,
+        nameEn,
+        qualifications,
+        registrationNo,
+        designation,
+        designationBn,
+        role,
+        roleBn,
+        bioBn,
+        imageUrl,
+        experienceYears,
+        phones,
+        specialties,
+        chambers,
+        isLead
+      } = req.body;
+
+      if (!nameBn) {
+        res.status(400).json({ error: "চিকিৎসকের বাংলা নাম আবশ্যক।" });
+        return;
+      }
+
+      const doctor = await db.createDoctor({
+        nameBn,
+        nameEn: nameEn || nameBn,
+        qualifications: qualifications || "",
+        registrationNo: registrationNo || "",
+        designation: designation || "",
+        designationBn: designationBn || "",
+        role: role || "",
+        roleBn: roleBn || "",
+        bioBn: bioBn || "",
+        imageUrl: imageUrl || "/dr-tamjid-hossain.jpg",
+        experienceYears: Number(experienceYears) || 5,
+        phones: Array.isArray(phones) ? phones : (phones ? [phones] : []),
+        specialties: Array.isArray(specialties) ? specialties : (specialties ? [specialties] : []),
+        chambers: Array.isArray(chambers) ? chambers : [],
+        isLead: Boolean(isLead)
+      });
+
+      res.status(201).json(doctor);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put("/api/admin/doctors/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const updated = await db.updateDoctor(req.params.id, req.body);
+      if (!updated) {
+        res.status(404).json({ error: "চিকিৎসক পাওয়া যায়নি" });
+        return;
+      }
+      res.json(updated);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete("/api/admin/doctors/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const success = await db.deleteDoctor(req.params.id);
+      if (!success) {
+        res.status(400).json({ error: "প্রধান চিকিৎসক মুছে ফেলা যাবে না অথবা অন্তত একজন চিকিৎসক থাকতে হবে।" });
+        return;
+      }
+      res.json({ success: true, message: "চিকিৎসক সফলভাবে মুছে ফেলা হয়েছে।" });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Doctor Profile Edit (Legacy single profile support)
   app.get("/api/admin/doctor", requireAdminAuth, async (req, res) => {
     try {
       const doctor = await db.getDoctorProfile();
@@ -599,11 +709,11 @@ async function startServer() {
   });
 
   // Helper to save doctor photo without any edits or filters
-  async function saveRawDoctorPhoto(imageData: string, fileName?: string) {
+  async function saveRawDoctorPhoto(imageData: string, fileName?: string, doctorId?: string) {
     const fs = await import("fs/promises");
     const matches = imageData.match(/^data:image\/([A-Za-z0-9-+.]+);base64,(.+)$/);
     let buffer: Buffer;
-    let ext = "png";
+    let ext = "jpg";
 
     if (matches && matches.length === 3) {
       const mimeType = matches[1].toLowerCase();
@@ -623,13 +733,15 @@ async function startServer() {
       // already exists
     }
 
-    const targetFilename = `dr-tamjid-hossain.${ext}`;
+    const cleanId = (doctorId || "dr-tamjid-hossain").replace(/[^a-zA-Z0-9_-]/g, "");
+    const targetFilename = `${cleanId}.${ext}`;
     const targetPath = path.join(publicDir, targetFilename);
     await fs.writeFile(targetPath, buffer);
 
-    // Also write dr-tamjid-hossain.jpg and original filename
-    const jpgPath = path.join(publicDir, "dr-tamjid-hossain.jpg");
-    await fs.writeFile(jpgPath, buffer);
+    // Also write jpg variant if extension is different
+    if (ext !== "jpg") {
+      await fs.writeFile(path.join(publicDir, `${cleanId}.jpg`), buffer);
+    }
 
     if (fileName) {
       const sanitized = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -645,17 +757,41 @@ async function startServer() {
     try {
       await fs.access(distPath);
       await fs.writeFile(path.join(distPath, targetFilename), buffer);
-      await fs.writeFile(path.join(distPath, "dr-tamjid-hossain.jpg"), buffer);
+      await fs.writeFile(path.join(distPath, `${cleanId}.jpg`), buffer);
     } catch (e) {
       // dist may not exist yet
     }
 
-    const imageUrl = `/dr-tamjid-hossain.jpg?v=${Date.now()}`;
-    await db.updateDoctorProfile({ imageUrl });
+    const imageUrl = `/${targetFilename}?v=${Date.now()}`;
+    if (doctorId) {
+      await db.updateDoctor(doctorId, { imageUrl });
+    } else {
+      await db.updateDoctorProfile({ imageUrl });
+    }
     return imageUrl;
   }
 
-  // Doctor Photo Direct File Upload (Admin Authenticated)
+  // Doctor Photo Direct File Upload for specific doctor
+  app.post("/api/admin/doctors/:id/upload-photo", requireAdminAuth, async (req, res) => {
+    try {
+      const { imageData, fileName } = req.body;
+      if (!imageData || typeof imageData !== "string") {
+        res.status(400).json({ error: "ছবির ডাটা পাওয়া যায়নি।" });
+        return;
+      }
+      const imageUrl = await saveRawDoctorPhoto(imageData, fileName, req.params.id);
+      res.json({
+        success: true,
+        imageUrl,
+        message: "চিকিৎসকের মূল ছবি কোনো ফিল্টার বা পরিবর্তন ছাড়াই সরাসরি সংরক্ষিত হয়েছে।"
+      });
+    } catch (err: any) {
+      console.error("Photo upload error:", err);
+      res.status(500).json({ error: err.message || "ছবি আপলোড ব্যর্থ হয়েছে।" });
+    }
+  });
+
+  // Doctor Photo Direct File Upload (Admin Authenticated - default/lead)
   app.post("/api/admin/doctor/upload-photo", requireAdminAuth, async (req, res) => {
     try {
       const { imageData, fileName } = req.body;

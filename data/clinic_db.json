@@ -26,6 +26,7 @@
     }
   },
   "doctorProfile": {
+    "id": "dr-tamjid-hossain",
     "nameBn": "ডা. তামজীদ হোসেন",
     "nameEn": "Dr. Tamjid Hossain",
     "qualifications": "MBBS, DHMS (Homeopathy), PDT (Medicine)",
@@ -36,8 +37,108 @@
     "roleBn": "প্রধান চিকিৎসক ও কনসালট্যান্ট, বাংলাদেশ হোমিও হল",
     "bioBn": "ডা. তামজীদ হোসেন দীর্ঘ অভিজ্ঞতাসম্পন্ন একজন বিশিষ্ট হোমিওপ্যাথিক চিকিৎসক ও শিক্ষাবিদ। তিনি আধুনিক রোগ নির্ণয় ও ক্লাসিক্যাল হোমিওপ্যাথির সমন্বয়ে জটিল ও দুরারোগ্য ব্যাধির চিকিৎসা দিয়ে আসছেন। প্রতিটি রোগীকে পর্যাপ্ত সময় দিয়ে শারীরিক, মানসিক ও সামগ্রিক লক্ষণের ভিত্তিতে ব্যক্তিগতকৃত ওষুধ নির্বাচন করেন।",
     "imageUrl": "/dr-tamjid-hossain.jpg",
-    "experienceYears": 18
+    "experienceYears": 18,
+    "phones": [
+      "+88 01714-990001",
+      "+88 01614-990001"
+    ],
+    "specialties": [
+      "জটিল ও পুরাতন ব্যাধি",
+      "বাতব্যথা ও আর্থ্রাইটিস",
+      "হাঁপানি ও অ্যালার্জি",
+      "গ্যাস্ট্রিক ও আলসার"
+    ],
+    "isLead": true
   },
+  "doctors": [
+    {
+      "id": "dr-tamjid-hossain",
+      "nameBn": "ডা. তামজীদ হোসেন",
+      "nameEn": "Dr. Tamjid Hossain",
+      "qualifications": "MBBS, DHMS (Homeopathy), PDT (Medicine)",
+      "registrationNo": "চিকিৎসক রেজিঃ নং- ২৬১৭৬",
+      "designation": "Principal, Chandpur Homeopathic Medical College & Hospital",
+      "designationBn": "প্রিন্সিপাল, চাঁদপুর হোমিওপ্যাথিক মেডিকেল কলেজ ও হাসপাতাল",
+      "role": "Lead Physician & Consultant",
+      "roleBn": "প্রধান চিকিৎসক ও কনসালট্যান্ট, বাংলাদেশ হোমিও হল",
+      "bioBn": "ডা. তামজীদ হোসেন দীর্ঘ অভিজ্ঞতাসম্পন্ন একজন বিশিষ্ট হোমিওপ্যাথিক চিকিৎসক ও শিক্ষাবিদ। তিনি আধুনিক রোগ নির্ণয় ও ক্লাসিক্যাল হোমিওপ্যাথির সমন্বয়ে জটিল ও দুরারোগ্য ব্যাধির চিকিৎসা দিয়ে আসছেন। প্রতিটি রোগীকে পর্যাপ্ত সময় দিয়ে শারীরিক, মানসিক ও সামগ্রিক লক্ষণের ভিত্তিতে ব্যক্তিগতকৃত ওষুধ নির্বাচন করেন।",
+      "imageUrl": "/dr-tamjid-hossain.jpg",
+      "experienceYears": 18,
+      "phones": [
+        "+88 01714-990001",
+        "+88 01614-990001"
+      ],
+      "specialties": [
+        "জটিল ও পুরাতন ব্যাধি",
+        "বাতব্যথা ও আর্থ্রাইটিস",
+        "হাঁপানি ও অ্যালার্জি",
+        "গ্যাস্ট্রিক ও আলসার"
+      ],
+      "isLead": true
+    },
+    {
+      "id": "dr-ashraf-ali",
+      "nameBn": "ডা. মোঃ আশরাফ আলী",
+      "nameEn": "Dr. Md. Ashraf Ali",
+      "qualifications": "এমএ, ডিএইচএমএস (হোমিওপ্যাথি), ডিইউএমএস (ইউনানী)",
+      "registrationNo": "চিকিৎসক রেজিঃ নং- ১২৩৫৭ (হোমিওপ্যাথি), ১১১১ (ইউনানী)",
+      "designation": "Assistant Professor, Adarsha Homeopathic Medical College & Hospital, Chandpur",
+      "designationBn": "সহকারী অধ্যাপক, আদর্শ হোমিওপ্যাথিক মেডিকেল কলেজ ও হাসপাতাল, খলিশাডুলী, চাঁদপুর।",
+      "role": "Homeopathic Physician & Consultant",
+      "roleBn": "হোমিওপ্যাথিক চিকিৎসক ও পরামর্শদাতা, বাংলাদেশ হোমিও ক্লিনিক",
+      "bioBn": "ডা. মোঃ আশরাফ আলী দীর্ঘ অভিজ্ঞতাসম্পন্ন সহকারী অধ্যাপক ও হোমিওপ্যাথিক চিকিৎসক। তিনি বন্ধ্যাত্ব (সন্তান না হওয়া), গর্ভকালীন মায়ের চিকিৎসা, স্তন ও জরায়ুর টিউমার, হরমোন সমস্যা, পাইলস, চর্মরোগ, টনসিল ও কিডনি পাথরের মতো জটিল ও পুরনো রোগের বিশেষজ্ঞ পরামর্শ ও আধুনিক চিকিৎসা সেবা দিয়ে আসছেন।",
+      "imageUrl": "/dr-ashraf-ali.jpg",
+      "visitingCardUrl": "/dr-ashraf-ali-card.png",
+      "experienceYears": 15,
+      "phones": [
+        "01743 902 773",
+        "01712 846 478"
+      ],
+      "specialties": [
+        "পরামর্শ ও সাধারণ স্বাস্থ্য",
+        "বন্ধ্যাত্ব (সন্তান না হওয়া)",
+        "গর্ভকালীন মায়ের চিকিৎসা",
+        "স্তন ও জরায়ুর টিউমার ও ক্যান্সার",
+        "হরমোন জনিত সমস্যা",
+        "মাসিক ও সাদাস্রাব সম্পর্কিত সমস্যা",
+        "যৌন দুর্বলতা ও অণ্ডকোষ জনিত সমস্যা",
+        "অর্শ, গেঁজ ও পাইলস্",
+        "টিউমার ও সিস্ট",
+        "চর্মরোগ",
+        "টনসিল",
+        "পিত্ত ও কিডনি পাথর",
+        "নাকে পলিপাস",
+        "আঁচিল"
+      ],
+      "chambers": [
+        {
+          "id": "ashraf-chandpur-chamber",
+          "nameEn": "Chandpur Chamber",
+          "nameBn": "চাঁদপুর চেম্বার",
+          "addressEn": "Faysal Shopping Complex (2nd Floor), beside Social Islami Bank, Bus Stand, Chandpur",
+          "addressBn": "ফয়সাল শপিং কমপ্লেক্স (২য় তলা), সোশ্যাল ইসলামী ব্যাংকের পাশে, বাস স্ট্যান্ড, চাঁদপুর।",
+          "visitingDaysEn": "Everyday",
+          "visitingDaysBn": "প্রতিদিন",
+          "visitingHoursEn": "10:00 AM – 8:00 PM",
+          "visitingHoursBn": "সকাল ১০ টা থেকে রাত ৮ টা পর্যন্ত",
+          "phone": "01743 902 773, 01712 846 478"
+        },
+        {
+          "id": "ashraf-matlab-chamber",
+          "nameEn": "Matlab Chamber",
+          "nameBn": "মতলব চেম্বার",
+          "addressEn": "Ma Amena Tower (Ground Floor, under Islami Bank), Matlab Bazar, Matlab (South), Chandpur",
+          "addressBn": "মা আমেনা টাওয়ার (ইসলামী ব্যাংকের নিচ তলা), মতলব বাজার, মতলব (দ:), চাঁদপুর।",
+          "visitingDaysEn": "Every Tuesday",
+          "visitingDaysBn": "প্রতি মঙ্গলবার",
+          "visitingHoursEn": "9:00 AM – 1:00 PM",
+          "visitingHoursBn": "সকাল ০৯টা থেকে দুপুর ০১টা পর্যন্ত (নির্ধারিত দিনে আসার পূর্বে যোগাযোগ করে আসবেন)",
+          "phone": "01743 902 773, 01712 846 478"
+        }
+      ],
+      "isLead": false
+    }
+  ],
   "chambers": [
     {
       "id": "matlab-chamber",

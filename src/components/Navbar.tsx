@@ -59,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navLinks = [
     { name: 'প্রধান পাতা', path: '/', icon: Home },
-    { name: 'চিকিৎসক', path: '/doctor', icon: Stethoscope },
+    { name: 'চিকিৎসকবৃন্দ', path: '/doctor', icon: Stethoscope },
     { name: 'সেবাসমূহ', path: '/services', icon: Sparkles },
     { name: 'চেম্বার ও সময়সূচী', path: '/chambers', icon: MapPin },
     { name: 'অনলাইন সিরিয়াল', path: '/appointment', icon: Calendar },

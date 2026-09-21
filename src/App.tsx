@@ -14,6 +14,7 @@ import { ClinicLogo } from './components/ClinicLogo.js';
 import { HomePage } from './pages/HomePage.js';
 import { DoctorPage } from './pages/DoctorPage.js';
 import { ServicesPage } from './pages/ServicesPage.js';
+import { ServiceDetailPage } from './pages/ServiceDetailPage.js';
 import { ChambersPage } from './pages/ChambersPage.js';
 import { AppointmentPage } from './pages/AppointmentPage.js';
 import { ArticlesPage } from './pages/ArticlesPage.js';
@@ -32,6 +33,7 @@ export default function App() {
   // Appointment preselection
   const [preselectedService, setPreselectedService] = useState<string>('');
   const [preselectedChamber, setPreselectedChamber] = useState<string>('');
+  const [preselectedDoctor, setPreselectedDoctor] = useState<string>('');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,6 +64,7 @@ export default function App() {
       setSiteData({
         settings: json.settings || json.siteSettings,
         doctor: json.doctor || json.doctorProfile,
+        doctors: json.doctors && json.doctors.length > 0 ? json.doctors : [json.doctor || json.doctorProfile],
         chambers: json.chambers || [],
         treatments: json.treatments || [],
         articles: json.articles || [],
@@ -116,8 +119,14 @@ export default function App() {
     }
   };
 
-  const handleOpenAppointment = (service?: string, chamber?: string) => {
-    if (service) setPreselectedService(service);
+  const handleOpenAppointment = (serviceOrDoctor?: string, chamber?: string) => {
+    if (serviceOrDoctor) {
+      if (serviceOrDoctor.includes('ডা.') || serviceOrDoctor.includes('Dr.')) {
+        setPreselectedDoctor(serviceOrDoctor);
+      } else {
+        setPreselectedService(serviceOrDoctor);
+      }
+    }
     if (chamber) setPreselectedChamber(chamber);
     navigate('/appointment');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -305,8 +314,24 @@ export default function App() {
               element={
                 <DoctorPage
                   doctor={siteData.doctor}
+                  doctors={siteData.doctors || [siteData.doctor]}
                   chambers={siteData.chambers}
-                  onOpenAppointment={() => handleOpenAppointment()}
+                  onOpenAppointment={(docName) => handleOpenAppointment(docName)}
+                  onRefreshData={fetchPublicData}
+                  isOwnerLoggedIn={session?.user?.role === 'admin'}
+                />
+              }
+            />
+            <Route
+              path="/doctors"
+              element={
+                <DoctorPage
+                  doctor={siteData.doctor}
+                  doctors={siteData.doctors || [siteData.doctor]}
+                  chambers={siteData.chambers}
+                  onOpenAppointment={(docName) => handleOpenAppointment(docName)}
+                  onRefreshData={fetchPublicData}
+                  isOwnerLoggedIn={session?.user?.role === 'admin'}
                 />
               }
             />
@@ -317,6 +342,18 @@ export default function App() {
                 <ServicesPage
                   treatments={siteData.treatments.filter((t) => t.isActive)}
                   onOpenAppointment={(service) => handleOpenAppointment(service)}
+                />
+              }
+            />
+
+            <Route
+              path="/services/:id"
+              element={
+                <ServiceDetailPage
+                  treatments={siteData.treatments.filter((t) => t.isActive)}
+                  chambers={siteData.chambers}
+                  doctors={siteData.doctors || [siteData.doctor]}
+                  onOpenAppointment={(service, chamber) => handleOpenAppointment(service, chamber)}
                 />
               }
             />
@@ -337,8 +374,10 @@ export default function App() {
                 <AppointmentPage
                   treatments={siteData.treatments.filter((t) => t.isActive)}
                   chambers={siteData.chambers}
+                  doctors={siteData.doctors || [siteData.doctor]}
                   preselectedService={preselectedService}
                   preselectedChamber={preselectedChamber}
+                  preselectedDoctor={preselectedDoctor}
                 />
               }
             />

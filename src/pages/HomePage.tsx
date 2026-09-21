@@ -66,7 +66,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 4. Doctor Profile Section */}
       <DoctorProfileSection
         doctor={siteData.doctor}
-        onOpenAppointment={() => onOpenAppointment()}
+        doctors={siteData.doctors || [siteData.doctor]}
+        onOpenAppointment={(docName) => onOpenAppointment(docName)}
       />
 
       {/* Quick link banner to full doctor page */}
@@ -75,7 +76,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           to="/doctor"
           className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 hover:text-emerald-950 transition hover:underline"
         >
-          <span>ডা. তামজীদ হোসেনের শিক্ষাগত যোগ্যতা, সম্মাননা ও সম্পূর্ণ প্রোফাইল দেখুন</span>
+          <span>আমাদের সকল চিকিৎসকের শিক্ষাগত যোগ্যতা, সম্মাননা, চেম্বার ও ভিজিটিং কার্ড দেখুন</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

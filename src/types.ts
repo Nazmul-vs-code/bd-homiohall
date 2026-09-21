@@ -19,6 +19,7 @@ export interface SiteSettings {
 }
 
 export interface DoctorProfile {
+  id?: string;
   nameBn: string;
   nameEn: string;
   qualifications: string;
@@ -29,7 +30,12 @@ export interface DoctorProfile {
   roleBn: string;
   bioBn: string;
   imageUrl: string;
+  visitingCardUrl?: string;
   experienceYears: number;
+  phones?: string[];
+  specialties?: string[];
+  chambers?: Chamber[];
+  isLead?: boolean;
 }
 
 export interface Treatment {
@@ -40,6 +46,9 @@ export interface Treatment {
   descriptionBn: string;
   icon: string;
   imageUrl?: string;
+  images?: string[];
+  symptoms?: string[];
+  benefits?: string[];
   order: number;
   isActive: boolean;
   category?: string;
@@ -100,6 +109,7 @@ export interface UserSession {
 export interface SiteData {
   settings: SiteSettings;
   doctor: DoctorProfile;
+  doctors?: DoctorProfile[];
   treatments: Treatment[];
   chambers: Chamber[];
   articles: Article[];

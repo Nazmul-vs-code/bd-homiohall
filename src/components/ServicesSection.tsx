@@ -1,53 +1,25 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Treatment } from '../types.js';
 import {
-  Stethoscope,
-  HeartPulse,
-  Baby,
-  ShieldAlert,
-  Activity,
   Sparkles,
-  ShieldCheck,
-  PlusCircle,
-  SunMedium,
-  Thermometer,
-  FileText,
-  Zap,
-  Wind,
-  ChevronRight,
-  ArrowUpRight
+  ArrowRight,
+  Calendar,
+  Image as ImageIcon
 } from 'lucide-react';
-import { TreatmentModal } from './TreatmentModal.js';
 
 interface ServicesSectionProps {
   treatments: Treatment[];
   onSelectForAppointment: (serviceName: string) => void;
 }
 
-// Icon mapper
-const iconMap: Record<string, React.FC<{ className?: string }>> = {
-  Stethoscope,
-  HeartPulse,
-  Baby,
-  ShieldAlert,
-  Activity,
-  Sparkles,
-  ShieldCheck,
-  PlusCircle,
-  SunMedium,
-  Thermometer,
-  FileText,
-  Zap,
-  Wind
-};
-
 export const ServicesSection: React.FC<ServicesSectionProps> = ({
   treatments,
   onSelectForAppointment
 }) => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [activeModalTreatment, setActiveModalTreatment] = useState<Treatment | null>(null);
 
   // Extract categories dynamically
   const categories = ['all', ...Array.from(new Set(treatments.map(t => t.category).filter(Boolean)))];
@@ -57,7 +29,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
     : treatments.filter(t => t.category === selectedCategory);
 
   return (
-    <section id="services" className="py-20 bg-white relative">
+    <section id="services" className="py-20 bg-slate-50/60 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -84,7 +56,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                 className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer ${
                   selectedCategory === cat
                     ? 'bg-emerald-800 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
                 }`}
               >
                 {cat === 'all' ? 'সকল সেবাসমূহ' : cat}
@@ -93,62 +65,77 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
           </div>
         )}
 
-        {/* Treatments Grid */}
+        {/* Treatments Grid with Real Photos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredTreatments.map((treatment, index) => {
-            const IconComponent = iconMap[treatment.icon] || Stethoscope;
+            const cardImg = treatment.imageUrl || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80';
+
             return (
               <motion.div
                 key={treatment.id}
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: (index % 4) * 0.08 }}
-                whileHover={{ y: -5 }}
-                className="group bg-slate-50 hover:bg-white rounded-2xl p-6 border border-slate-200/80 hover:border-emerald-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                transition={{ duration: 0.35, delay: (index % 4) * 0.06 }}
+                whileHover={{ y: -4 }}
+                onClick={() => {
+                  navigate(`/services/${treatment.id}`);
+                  window.scrollTo(0, 0);
+                }}
+                className="group bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:border-emerald-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer"
               >
                 <div>
-                  {/* Top row: Icon and Category tag */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 group-hover:bg-emerald-700 group-hover:text-white transition-colors duration-300 flex items-center justify-center shadow-sm">
-                      <IconComponent className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
-                    </div>
+                  {/* Photo Container */}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
+                    <img
+                      src={cardImg}
+                      alt={treatment.titleBn}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
+
                     {treatment.category && (
-                      <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md">
+                      <span className="absolute top-3 left-3 text-[11px] font-semibold text-emerald-100 bg-emerald-950/80 backdrop-blur-sm border border-emerald-600/40 px-2.5 py-0.5 rounded-full shadow-xs">
                         {treatment.category}
                       </span>
                     )}
+
+                    <div className="absolute bottom-2 left-3 right-3 text-white">
+                      <p className="text-[10px] text-emerald-200 font-sans-en truncate font-medium">
+                        {treatment.titleEn}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-900 transition-colors mb-1 leading-snug">
-                    {treatment.titleBn}
-                  </h3>
-                  <p className="text-xs font-semibold text-slate-400 font-sans-en mb-3 line-clamp-1">
-                    {treatment.titleEn}
-                  </p>
-
-                  {/* Description */}
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed line-clamp-3 mb-4">
-                    {treatment.descriptionBn}
-                  </p>
+                  {/* Title & Description */}
+                  <div className="p-5">
+                    <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-800 transition-colors mb-1.5 leading-snug">
+                      {treatment.titleBn}
+                    </h3>
+                    <p className="text-slate-600 text-xs leading-relaxed line-clamp-3">
+                      {treatment.descriptionBn}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Bottom Actions */}
-                <div className="pt-4 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                  <button
-                    onClick={() => setActiveModalTreatment(treatment)}
-                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>বিস্তারিত জানুন</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </button>
+                <div className="p-5 pt-0 border-t border-slate-100 mt-2 flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-emerald-800 group-hover:text-emerald-950 inline-flex items-center gap-1 group-hover:underline">
+                    <span>বিস্তারিত</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
 
                   <button
-                    onClick={() => onSelectForAppointment(treatment.titleBn)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 shadow-sm transition-colors cursor-pointer"
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectForAppointment(treatment.titleBn);
+                    }}
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 shadow-xs transition-colors cursor-pointer flex items-center gap-1"
                   >
-                    সিরিয়াল নিন
+                    <Calendar className="w-3 h-3" />
+                    <span>সিরিয়াল</span>
                   </button>
                 </div>
               </motion.div>
@@ -156,14 +143,18 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
           })}
         </div>
 
-      </div>
+        {/* View All Services Link Banner */}
+        <div className="mt-12 text-center">
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white text-sm font-bold shadow-md hover:shadow-lg transition"
+          >
+            <span>আমাদের সকল হোমিওপ্যাথিক চিকিৎসাসেবা দেখুন</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
 
-      {/* Detail Modal */}
-      <TreatmentModal
-        treatment={activeModalTreatment}
-        onClose={() => setActiveModalTreatment(null)}
-        onSelectForAppointment={onSelectForAppointment}
-      />
+      </div>
     </section>
   );
 };

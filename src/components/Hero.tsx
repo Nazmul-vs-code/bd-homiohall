@@ -88,37 +88,37 @@ export const Hero: React.FC<HeroProps> = ({ settings, doctor, onOpenAppointment 
             className="lg:col-span-7 flex flex-col items-start"
           >
             {/* Clinic Badge */}
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-800/80 border border-emerald-500/40 text-emerald-200 text-xs sm:text-sm font-medium mb-5 backdrop-blur-md shadow-lg shadow-emerald-950/50">
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-emerald-400/60 text-white text-xs sm:text-sm font-medium mb-5 backdrop-blur-md shadow-lg shadow-black/40">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
               </span>
-              <span>{settings.taglineBn || "একটি জটিল ব্যাধি হোমিওপ্যাথিক চিকিৎসা কেন্দ্র"}</span>
+              <span className="text-white font-semibold">{settings.taglineBn || "একটি জটিল ব্যাধি হোমিওপ্যাথিক চিকিৎসা কেন্দ্র"}</span>
             </motion.div>
 
             {/* Main Headline */}
-            <motion.h1 variants={itemVariants} className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.25] mb-4 drop-shadow-sm">
+            <motion.h1 variants={itemVariants} className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.25] mb-4 drop-shadow-md">
               {settings.heroHeadlineBn || "দীর্ঘদিনের জটিল ও পুরনো রোগের বিশ্বস্ত হোমিওপ্যাথিক সমাধান"}
             </motion.h1>
 
             {/* Slogan & Supporting Description */}
-            <motion.p variants={itemVariants} className="text-emerald-100/90 text-base sm:text-lg leading-relaxed mb-6 max-w-2xl font-normal">
-              {settings.heroDescriptionBn || "প্রিন্সিপাল ডা. তামজীদ হোসেন-এর সরাসরি তত্ত্বাবধানে চাঁদপুরের মতলব ও হাজীগঞ্জে আধুনিক ও বিজ্ঞানসম্মত হোমিওপ্যাথিক চিকিৎসা সেবা।"}
+            <motion.p variants={itemVariants} className="text-slate-100 text-base sm:text-lg leading-relaxed mb-6 max-w-2xl font-normal drop-shadow-sm">
+              {settings.heroDescriptionBn || "প্রিন্সিপাল ডা. তামজীদ হোসেন এবং সহকারী অধ্যাপক ডা. মোঃ আশরাফ আলীর সরাসরি পরিচালনায় আধুনিক ও বিজ্ঞানসম্মত চিকিৎসা সেবা।"}
             </motion.p>
 
             {/* Key Clinical Pillars Chip row */}
-            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2 sm:gap-3 mb-8 text-xs sm:text-sm text-emerald-200">
-              <div className="flex items-center gap-1.5 bg-emerald-900/80 border border-emerald-700/60 px-3 py-1.5 rounded-xl shadow-sm backdrop-blur-sm hover:border-emerald-400/50 transition">
+            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2 sm:gap-3 mb-8 text-xs sm:text-sm text-white font-medium">
+              <div className="flex items-center gap-1.5 bg-slate-900/80 border border-emerald-400/60 px-3.5 py-1.5 rounded-xl shadow-md backdrop-blur-md hover:border-emerald-300 transition">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>নিরাপদ ও কার্যকর</span>
+                <span className="text-white">নিরাপদ ও কার্যকর</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-emerald-900/80 border border-emerald-700/60 px-3 py-1.5 rounded-xl shadow-sm backdrop-blur-sm hover:border-emerald-400/50 transition">
+              <div className="flex items-center gap-1.5 bg-slate-900/80 border border-emerald-400/60 px-3.5 py-1.5 rounded-xl shadow-md backdrop-blur-md hover:border-emerald-300 transition">
                 <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>১০০% পার্শ্বপ্রতিক্রিয়াহীন</span>
+                <span className="text-white">১০০% পার্শ্বপ্রতিক্রিয়াহীন</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-emerald-900/80 border border-emerald-700/60 px-3 py-1.5 rounded-xl shadow-sm backdrop-blur-sm hover:border-red-400/50 transition">
+              <div className="flex items-center gap-1.5 bg-slate-900/80 border border-emerald-400/60 px-3.5 py-1.5 rounded-xl shadow-md backdrop-blur-md hover:border-red-400 transition">
                 <HeartHandshake className="w-4 h-4 text-red-400 flex-shrink-0" />
-                <span>মানবিক ও দীর্ঘস্থায়ী সুফল</span>
+                <span className="text-white">মানবিক ও দীর্ঘস্থায়ী সুফল</span>
               </div>
             </motion.div>
 
@@ -138,10 +138,10 @@ export const Hero: React.FC<HeroProps> = ({ settings, doctor, onOpenAppointment 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 href={`tel:${settings.emergencyHotline || "+8801714990001"}`}
-                className="relative inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-base text-emerald-100 bg-emerald-800/80 hover:bg-emerald-700/90 border border-emerald-600/40 transition-all duration-200 shadow-lg group"
+                className="relative inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-base text-white bg-slate-900/90 hover:bg-slate-800 border border-emerald-400/60 transition-all duration-200 shadow-lg group"
               >
                 <Phone className="w-5 h-5 text-red-400 group-hover:rotate-12 transition-transform duration-300" />
-                <span className="font-sans-en">{settings.emergencyHotline || "+88 01714-990001"}</span>
+                <span className="font-sans-en text-white">{settings.emergencyHotline || "+88 01714-990001"}</span>
               </motion.a>
             </motion.div>
 
@@ -149,22 +149,22 @@ export const Hero: React.FC<HeroProps> = ({ settings, doctor, onOpenAppointment 
             <motion.div 
               variants={itemVariants}
               whileHover={{ y: -3, transition: { duration: 0.2 } }}
-              className="flex items-center gap-4 bg-emerald-900/80 border border-emerald-600/40 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md w-full max-w-xl shadow-xl"
+              className="flex items-center gap-4 bg-slate-900/95 border border-emerald-500/60 rounded-2xl p-3.5 sm:p-4 backdrop-blur-md w-full max-w-xl shadow-xl"
             >
               <div className="relative flex-shrink-0">
                 {!docImgError ? (
                   <img
                     src={doctor.imageUrl || "/dr-tamjid-hossain.jpg"}
                     alt={doctor.nameBn}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover object-top border-2 border-emerald-400/60 shadow-md"
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover object-top border-2 border-emerald-400/80 shadow-md"
                     onError={() => setDocImgError(true)}
                   />
                 ) : (
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-emerald-800 border-2 border-emerald-400/60 shadow-md flex items-center justify-center text-white font-bold text-base">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-emerald-800 border-2 border-emerald-400/80 shadow-md flex items-center justify-center text-white font-bold text-base">
                     ডা.
                   </div>
                 )}
-                <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-emerald-950 flex items-center justify-center">
+                <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900 flex items-center justify-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                 </span>
               </div>
@@ -175,10 +175,10 @@ export const Hero: React.FC<HeroProps> = ({ settings, doctor, onOpenAppointment 
                     {doctor.registrationNo}
                   </span>
                 </div>
-                <p className="text-emerald-200 text-xs sm:text-sm truncate font-medium">
+                <p className="text-amber-300 text-xs sm:text-sm truncate font-semibold mt-0.5">
                   {doctor.qualifications}
                 </p>
-                <p className="text-emerald-300/90 text-[11px] sm:text-xs truncate">
+                <p className="text-slate-200 text-[11px] sm:text-xs truncate font-normal mt-0.5">
                   {doctor.designationBn}
                 </p>
               </div>
@@ -223,19 +223,19 @@ export const Hero: React.FC<HeroProps> = ({ settings, doctor, onOpenAppointment 
                 </AnimatePresence>
 
                 {/* Floating Badge Inside Image (Top Left) */}
-                <div className="absolute top-4 left-4 bg-emerald-950/85 backdrop-blur-md border border-emerald-500/30 rounded-lg px-3 py-1.5 shadow-lg flex items-center gap-2">
+                <div className="absolute top-4 left-4 bg-slate-950/90 backdrop-blur-md border border-emerald-400/50 rounded-lg px-3 py-1.5 shadow-lg flex items-center gap-2">
                   <Award className="w-4 h-4 text-emerald-400" />
                   <span className="text-xs font-bold text-white tracking-wide">১৮+ বছরের বিশ্বস্ত সেবা</span>
                 </div>
 
                 {/* Floating Badge Inside Image (Bottom Left) */}
-                <div className="absolute bottom-4 left-4 right-16 bg-emerald-950/90 backdrop-blur-md border border-emerald-500/30 rounded-xl p-2.5 sm:p-3 shadow-lg">
+                <div className="absolute bottom-4 left-4 right-16 bg-slate-950/95 backdrop-blur-md border border-emerald-400/50 rounded-xl p-2.5 sm:p-3 shadow-lg">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                    <span className="text-xs font-bold text-white truncate">মতলব ও হাজীগঞ্জ আধুনিক চেম্বার</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span className="text-xs font-bold text-white truncate">মতলব, হাজীগঞ্জ ও চাঁদপুর চেম্বার</span>
                   </div>
-                  <p className="text-[11px] text-emerald-200/80 truncate mt-0.5">
-                    শনি, রবি, সোম, মঙ্গল, বুধ, বৃহস্পতি ও শুক্রবার রোগী দেখা হয়
+                  <p className="text-[11px] text-slate-200 font-medium truncate mt-0.5">
+                    সরাসরি অভিজ্ঞ চিকিৎসকবৃন্দের তত্ত্বাবধানে রোগী দেখা হয়
                   </p>
                 </div>
 

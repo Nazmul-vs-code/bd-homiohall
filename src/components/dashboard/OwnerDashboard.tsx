@@ -333,6 +333,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({
         {activeTab === 'doctor' && (
           <DoctorTab
             doctor={data.doctor}
+            doctors={data.doctors || [data.doctor]}
             onRefresh={handleRefresh}
             token={token}
           />
