@@ -6,6 +6,7 @@ interface DoctorPhotoUploadModalProps {
   onClose: () => void;
   onSuccess: (newUrl: string) => void;
   currentImageUrl?: string;
+  doctorId?: string;
 }
 
 export const DoctorPhotoUploadModal: React.FC<DoctorPhotoUploadModalProps> = ({
@@ -13,6 +14,7 @@ export const DoctorPhotoUploadModal: React.FC<DoctorPhotoUploadModalProps> = ({
   onClose,
   onSuccess,
   currentImageUrl,
+  doctorId
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,14 +35,21 @@ export const DoctorPhotoUploadModal: React.FC<DoctorPhotoUploadModalProps> = ({
     setError('');
     setSuccess('');
 
+    const token = localStorage.getItem('token') || localStorage.getItem('admin_token') || '';
+
     const reader = new FileReader();
     reader.onload = async () => {
       try {
         const base64Data = reader.result as string;
-        const res = await fetch('/api/doctor/upload-photo-direct', {
+        const endpoint = doctorId
+          ? `/api/admin/doctors/${doctorId}/upload-photo`
+          : '/api/admin/doctor/upload-photo';
+
+        const res = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
             imageData: base64Data,
@@ -50,13 +59,13 @@ export const DoctorPhotoUploadModal: React.FC<DoctorPhotoUploadModalProps> = ({
 
         const data = await res.json();
         if (res.ok && data.success) {
-          setSuccess('চিকিৎসকের আসল ছবি সফলভাবে সংরক্ষিত হয়েছে! কোনো এডিটিং বা ফিল্টার ছাড়াই সাইটে সরাসরি যুক্ত করা হয়েছে।');
+          setSuccess('চিকিৎসকের প্রোফাইল ছবি সফলভাবে সংরক্ষিত হয়েছে!');
           onSuccess(data.imageUrl);
           setTimeout(() => {
             onClose();
           }, 1400);
         } else {
-          setError(data.error || 'ছবি আপলোড করতে সমস্যা হয়েছে।');
+          setError(data.error || 'ছবি আপলোড করতে অ্যাডমিন পারমিশন প্রয়োজন।');
         }
       } catch (err: any) {
         setError('ছবি আপলোড ব্যর্থ হয়েছে: ' + (err.message || 'Error'));
@@ -73,6 +82,16 @@ export const DoctorPhotoUploadModal: React.FC<DoctorPhotoUploadModalProps> = ({
     reader.readAsDataURL(file);
   };
 
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -83,65 +102,61 @@ export const DoctorPhotoUploadModal: React.FC<DoctorPhotoUploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-emerald-950 text-white">
-          <div className="flex items-center gap-2.5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
+        {/* Header */}
+        <div className="bg-[#003870] text-white px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <Camera className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-base font-bold">চিকিৎসকের মূল ছবি আপলোড</h3>
+            <div>
+              <h3 className="font-bold text-base">চিকিৎসকের ছবি পরিবর্তন</h3>
+              <p className="text-[11px] text-blue-200">শুধুমাত্র অ্যাডমিন প্যানেল অথেন্টিকেশন দ্বারা নিয়ন্ত্রিত</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition"
-            title="বন্ধ করুন"
+            className="p-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modal Content */}
-        <div className="p-6 space-y-4">
-          <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200/80 rounded-xl text-emerald-900 text-xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-700 flex-shrink-0" />
-            <span>
-              <strong>কোনো এডিটিং বা ফিল্টার নেই:</strong> আপনার দেওয়া ছবিটি হুবহু আসল ও অবিকৃত অবস্থায় সরাসরি সার্ভারে সংরক্ষিত হবে।
-            </span>
-          </div>
-
-          {error && (
-            <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-              <span>{error}</span>
+        {/* Body */}
+        <div className="p-6 space-y-5">
+          {/* Current photo preview */}
+          {currentImageUrl && (
+            <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
+              <img
+                src={currentImageUrl}
+                alt="Current profile"
+                className="w-14 h-14 rounded-full object-cover object-top border-2 border-emerald-600 shadow-sm"
+              />
+              <div className="text-xs">
+                <span className="font-bold text-slate-700 block">বর্তমান ছবি</span>
+                <span className="text-slate-400 font-sans-en text-[11px] truncate max-w-xs block">
+                  {currentImageUrl}
+                </span>
+              </div>
             </div>
           )}
 
-          {success && (
-            <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span>{success}</span>
-            </div>
-          )}
-
-          {/* Drag and drop zone */}
+          {/* Upload Area */}
           <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragActive(true);
-            }}
-            onDragLeave={() => setDragActive(false)}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
               dragActive
-                ? 'border-emerald-600 bg-emerald-50/80 scale-[1.01]'
-                : 'border-slate-300 hover:border-emerald-600 bg-slate-50/50 hover:bg-slate-50'
+                ? 'border-emerald-500 bg-emerald-50/50 scale-[0.99]'
+                : 'border-slate-300 hover:border-emerald-600 hover:bg-slate-50'
             }`}
           >
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
               className="hidden"
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
@@ -150,36 +165,44 @@ export const DoctorPhotoUploadModal: React.FC<DoctorPhotoUploadModalProps> = ({
               }}
             />
 
-            <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center mb-3 shadow-inner">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto mb-3">
               {loading ? (
-                <RefreshCw className="w-7 h-7 animate-spin text-emerald-600" />
+                <RefreshCw className="w-6 h-6 animate-spin text-emerald-600" />
               ) : (
-                <Upload className="w-7 h-7" />
+                <Upload className="w-6 h-6" />
               )}
             </div>
 
-            <p className="text-sm font-bold text-slate-900">
-              {loading
-                ? 'ছবি সংরক্ষিত হচ্ছে...'
-                : 'আপনার স্ক্রিনশট বা আসল ছবি এখানে ড্র্যাগ করুন অথবা ক্লিক করুন'}
+            <p className="font-bold text-slate-800 text-sm mb-1">
+              {loading ? 'ছবি আপলোড ও সংরক্ষণ হচ্ছে...' : 'নতুন ছবি নির্বাচন বা ড্র্যাগ করুন'}
             </p>
-            <p className="text-xs text-slate-500 mt-1">
-              Screenshot 2026-09-19 133052.png বা যেকোনো JPG/PNG ফাইল
+            <p className="text-xs text-slate-500">
+              JPG, PNG বা WEBP ফরম্যাট
             </p>
-
-            <button
-              type="button"
-              disabled={loading}
-              className="mt-4 px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-md inline-flex items-center gap-2"
-            >
-              <Upload className="w-4 h-4" />
-              <span>কম্পিউটার বা মোবাইল থেকে ছবি বাছুন</span>
-            </button>
           </div>
 
-          <p className="text-[11px] text-slate-400 text-center">
-            * আপনি চাইলে বাম পাশের AI Studio File Explorer থেকেও সরাসরি <code>/public/</code> ফোল্ডারে <code>dr-tamjid-hossain.jpg</code> অথবা <code>dr-tamjid-hossain.png</code> হিসেবে আপলোড করতে পারেন।
-          </p>
+          {/* Feedback messages */}
+          {error && (
+            <div className="flex items-start gap-2 p-3 bg-red-50 text-red-700 rounded-xl text-xs border border-red-200">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {success && (
+            <div className="flex items-start gap-2 p-3 bg-emerald-50 text-emerald-800 rounded-xl text-xs border border-emerald-200">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span>{success}</span>
+            </div>
+          )}
+
+          {/* Admin Note */}
+          <div className="flex items-start gap-2 text-[11px] text-slate-600 bg-blue-50/70 p-3 rounded-xl border border-blue-200/50">
+            <ShieldCheck className="w-4 h-4 text-[#0052a3] flex-shrink-0 mt-0.5" />
+            <p>
+              চিকিৎসকের প্রোফাইল ছবি পরিবর্তনের ক্ষমতা শুধুমাত্র সুরক্ষিত অ্যাডমিন ক্রেডেনশিয়ালের সাথেই অনুমোদিত।
+            </p>
+          </div>
         </div>
       </div>
     </div>

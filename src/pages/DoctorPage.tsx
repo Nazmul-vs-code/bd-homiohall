@@ -228,15 +228,17 @@ export const DoctorPage: React.FC<DoctorPageProps> = ({
                     <span>{activeDoctor.registrationNo}</span>
                   </div>
 
-                  {/* Photo upload trigger */}
-                  <button
-                    onClick={() => setIsUploadOpen(true)}
-                    className="absolute top-4 right-4 bg-black/60 hover:bg-black/85 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-md flex items-center gap-1.5 transition backdrop-blur-sm z-10 border border-white/20 cursor-pointer"
-                    title="আসল ছবি পরিবর্তন করুন"
-                  >
-                    <Camera className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>ছবি পরিবর্তন</span>
-                  </button>
+                  {/* Photo upload trigger - Only visible to authenticated owner/admin */}
+                  {isOwnerLoggedIn && (
+                    <button
+                      onClick={() => setIsUploadOpen(true)}
+                      className="absolute top-4 right-4 bg-black/60 hover:bg-black/85 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-md flex items-center gap-1.5 transition backdrop-blur-sm z-10 border border-white/20 cursor-pointer"
+                      title="আসল ছবি পরিবর্তন করুন"
+                    >
+                      <Camera className="w-3.5 h-3.5 text-emerald-300" />
+                      <span>ছবি পরিবর্তন</span>
+                    </button>
+                  )}
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent flex flex-col justify-end p-6 text-white pointer-events-none">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold w-fit mb-2 backdrop-blur-sm pointer-events-auto">

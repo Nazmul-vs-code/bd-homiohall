@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import fs from 'fs';
 import path from 'path';
 import mongoose from 'mongoose';
@@ -354,30 +357,7 @@ export const defaultArticles: Article[] = [
   }
 ];
 
-export const defaultAppointments: Appointment[] = [
-  {
-    id: "apt-1",
-    fullName: "মো: রফিকুল ইসলাম",
-    phone: "01712-345678",
-    serviceName: "পরামর্শ ও চিকিৎসা",
-    problemDescription: "গত ৬ মাস যাবৎ পেটের গ্যাস্ট্রিক ও হজমে মারাত্মক সমস্যা। খাবার খাওয়ার পর বুক জ্বালাপোড়া করে।",
-    preferredChamber: "মতলব চেম্বার",
-    preferredDate: "শনিবার",
-    status: "pending",
-    createdAt: new Date(Date.now() - 1200000).toISOString()
-  },
-  {
-    id: "apt-2",
-    fullName: "মোসাম্মৎ ফাতেমা বেগম",
-    phone: "01819-876543",
-    serviceName: "হরমোনজনিত সমস্যা",
-    problemDescription: "থাইরয়েড ও অনিয়মিত মাসিকের সমস্যা নিয়ে পরামর্শ ও চিকিৎসা গ্রহণ করতে চাই।",
-    preferredChamber: "হাজীগঞ্জ চেম্বার",
-    preferredDate: "সোমবার",
-    status: "contacted",
-    createdAt: new Date(Date.now() - 7200000).toISOString()
-  }
-];
+export const defaultAppointments: Appointment[] = [];
 
 interface DatabaseSchema {
   siteSettings: SiteSettings;
@@ -478,9 +458,27 @@ const userSchema = new mongoose.Schema({
   updatedAt: { type: String, default: () => new Date().toISOString() }
 }, { collection: 'users' });
 
+// Mongoose Appointment / Booking Schema
+const appointmentSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  fullName: { type: String, required: true, trim: true },
+  phone: { type: String, required: true, trim: true },
+  patientType: { type: String, enum: ['male', 'female', 'child', ''], default: '' },
+  serviceName: { type: String, required: true, trim: true },
+  problemDescription: { type: String, default: "" },
+  preferredChamber: { type: String, default: "মতলব চেম্বার" },
+  preferredDate: { type: String, default: "যেকোনো দিন" },
+  reportImageUrl: { type: String, default: "" },
+  status: { type: String, enum: ['pending', 'contacted', 'completed'], default: 'pending' },
+  notes: { type: String, default: "" },
+  createdAt: { type: String, default: () => new Date().toISOString() }
+}, { collection: 'appointments' });
+
 export let UserModel: mongoose.Model<any> | null = null;
+export let AppointmentModel: mongoose.Model<any> | null = null;
 try {
   UserModel = mongoose.models.User || mongoose.model('User', userSchema);
+  AppointmentModel = mongoose.models.Appointment || mongoose.model('Appointment', appointmentSchema);
 } catch {
   // Ignore re-compilation
 }
@@ -498,7 +496,23 @@ export async function initMongoDB() {
     isMongoConnected = true;
     console.log('[DB] Successfully connected to MongoDB Atlas (bangladesh_homoeo_hall).');
 
-    // Ensure default admin user is seeded or updated
+    // 1. Synchronize any existing local appointments to MongoDB if they are not there yet
+    if (AppointmentModel) {
+      try {
+        const localAppointments = readDatabase().appointments || [];
+        for (const apt of localAppointments) {
+          const exists = await AppointmentModel.findOne({ id: apt.id }).lean();
+          if (!exists) {
+            await AppointmentModel.create(apt);
+          }
+        }
+        console.log(`[DB] Synchronized ${localAppointments.length} local appointments with MongoDB collection.`);
+      } catch (syncErr) {
+        console.warn('[DB] Appointments sync warning:', syncErr);
+      }
+    }
+
+    // 2. Ensure default admin user is seeded or updated
     const adminEmail = (process.env.ADMIN_EMAIL || "khalekbiton1977@gmail.com").toLowerCase().trim();
     const existingAdmin = await db.findUserByEmail(adminEmail);
     if (!existingAdmin) {
@@ -725,6 +739,29 @@ export const db = {
   },
 
   getAppointments: async (): Promise<Appointment[]> => {
+    if (isMongoConnected && AppointmentModel) {
+      try {
+        const docs = await AppointmentModel.find({}).sort({ createdAt: -1 }).lean();
+        if (docs && docs.length > 0) {
+          return docs.map((d: any) => ({
+            id: d.id || d._id?.toString(),
+            fullName: d.fullName,
+            phone: d.phone,
+            patientType: d.patientType || '',
+            serviceName: d.serviceName,
+            problemDescription: d.problemDescription || '',
+            preferredChamber: d.preferredChamber || 'মতলব চেম্বার',
+            preferredDate: d.preferredDate || 'যেকোনো দিন',
+            reportImageUrl: d.reportImageUrl || '',
+            status: d.status || 'pending',
+            notes: d.notes || '',
+            createdAt: d.createdAt
+          }));
+        }
+      } catch (err) {
+        console.error('[DB] Mongo getAppointments error:', err);
+      }
+    }
     const appointments = readDatabase().appointments;
     return [...appointments].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   },
@@ -736,11 +773,35 @@ export const db = {
       status: 'pending',
       createdAt: new Date().toISOString()
     };
+    
+    // Write to MongoDB Atlas
+    if (isMongoConnected && AppointmentModel) {
+      try {
+        await AppointmentModel.create(newAppointment);
+        console.log(`[DB] Created new appointment ${newAppointment.id} in MongoDB Atlas.`);
+      } catch (err) {
+        console.error('[DB] Failed to save appointment to MongoDB Atlas:', err);
+      }
+    }
+
+    // Save to local JSON backup
     data.appointments.unshift(newAppointment);
     saveDatabase(data);
     return newAppointment;
   },
   updateAppointmentStatus: async (id: string, status: 'pending' | 'contacted' | 'completed', notes?: string): Promise<Appointment | null> => {
+    // Update in MongoDB
+    if (isMongoConnected && AppointmentModel) {
+      try {
+        const updatePayload: any = { status };
+        if (notes !== undefined) updatePayload.notes = notes;
+        await AppointmentModel.updateOne({ id }, { $set: updatePayload });
+      } catch (err) {
+        console.error('[DB] Mongo updateAppointmentStatus error:', err);
+      }
+    }
+
+    // Update in local JSON backup
     const data = readDatabase();
     const index = data.appointments.findIndex(a => a.id === id);
     if (index === -1) return null;
@@ -752,6 +813,16 @@ export const db = {
     return data.appointments[index];
   },
   deleteAppointment: async (id: string): Promise<boolean> => {
+    // Delete in MongoDB
+    if (isMongoConnected && AppointmentModel) {
+      try {
+        await AppointmentModel.deleteOne({ id });
+      } catch (err) {
+        console.error('[DB] Mongo deleteAppointment error:', err);
+      }
+    }
+
+    // Delete in local JSON backup
     const data = readDatabase();
     const initialLen = data.appointments.length;
     data.appointments = data.appointments.filter(a => a.id !== id);

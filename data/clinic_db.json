@@ -366,39 +366,5 @@
       "updatedAt": "2026-09-09T07:16:59.178Z"
     }
   ],
-  "appointments": [
-    {
-      "fullName": "মোহাম্মদ রফিক",
-      "phone": "01712345678",
-      "serviceName": "পরামর্শ ও চিকিৎসা",
-      "problemDescription": "দীর্ঘদিনের এলার্জি ও শ্বাসকষ্ট",
-      "preferredChamber": "মতলব চেম্বার",
-      "preferredDate": "যেকোনো দিন",
-      "id": "apt-1789802487194-468",
-      "status": "pending",
-      "createdAt": "2026-09-19T07:21:27.194Z"
-    },
-    {
-      "id": "apt-1",
-      "fullName": "মো: রফিকুল ইসলাম",
-      "phone": "01712-345678",
-      "serviceName": "পরামর্শ ও চিকিৎসা",
-      "problemDescription": "গত ৬ মাস যাবৎ পেটের গ্যাস্ট্রিক ও হজমে মারাত্মক সমস্যা। খাবার খাওয়ার পর বুক জ্বালাপোড়া করে।",
-      "preferredChamber": "মতলব চেম্বার",
-      "preferredDate": "শনিবার",
-      "status": "pending",
-      "createdAt": "2026-09-19T06:56:59.178Z"
-    },
-    {
-      "id": "apt-2",
-      "fullName": "মোসাম্মৎ ফাতেমা বেগম",
-      "phone": "01819-876543",
-      "serviceName": "হরমোনজনিত সমস্যা",
-      "problemDescription": "থাইরয়েড ও অনিয়মিত মাসিকের সমস্যা নিয়ে পরামর্শ ও চিকিৎসা গ্রহণ করতে চাই।",
-      "preferredChamber": "হাজীগঞ্জ চেম্বার",
-      "preferredDate": "সোমবার",
-      "status": "contacted",
-      "createdAt": "2026-09-19T05:16:59.178Z"
-    }
-  ]
+  "appointments": []
 }

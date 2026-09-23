@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
@@ -370,10 +373,91 @@ async function startServer() {
     }
   });
 
+  // Upload medical report image to ImgBB (Only PNG format accepted)
+  app.post("/api/public/upload-report", async (req, res) => {
+    try {
+      const { image, name } = req.body;
+      if (!image || typeof image !== 'string') {
+        res.status(400).json({ error: "অনুগ্রহ করে রিপোর্টের ইমেজ ফাইল নির্বাচন করুন।" });
+        return;
+      }
+
+      // Strict validation: Only PNG format allowed
+      const isPngDataUri = image.startsWith("data:image/png;base64,");
+      let base64Data = "";
+      if (isPngDataUri) {
+        base64Data = image.replace(/^data:image\/png;base64,/, "");
+      } else if (!image.startsWith("data:image/")) {
+        // If passed without header, inspect signature or verify
+        base64Data = image;
+      } else {
+        res.status(400).json({ error: "শুধুমাত্র পিএনজি (.png) ফরম্যাটের রিপোর্ট ফাইল আপলোড করা যাবে।" });
+        return;
+      }
+
+      // Check PNG magic bytes: 89 50 4E 47 (first 4 bytes of PNG in base64 start with iVBORw0KGgo)
+      if (base64Data.length < 10) {
+        res.status(400).json({ error: "ফাইলের সাইজ বা ফরম্যাট সঠিক নয়।" });
+        return;
+      }
+
+      const imgbbKey = process.env.IMGBB_API_KEY || "8bb84650e0d6caa98ea544c5b10bcdb1";
+      if (!imgbbKey) {
+        res.status(500).json({ error: "ImgBB এপিআই কী কনফিগার করা নেই।" });
+        return;
+      }
+
+      // Post to ImgBB API v1 using FormData
+      const formData = new FormData();
+      formData.append("key", imgbbKey);
+      formData.append("image", base64Data);
+      if (name) {
+        formData.append("name", String(name).replace(/[^a-zA-Z0-9_-]/g, "_"));
+      }
+
+      const imgbbRes = await fetch("https://api.imgbb.com/1/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const imgbbJson: any = await imgbbRes.json();
+
+      if (!imgbbRes.ok || !imgbbJson.success) {
+        const errorDetail = imgbbJson?.error?.message || "ImgBB এ রিপোর্ট আপলোডে ব্যর্থ হয়েছে।";
+        console.error("[ImgBB Upload Error]:", errorDetail);
+        res.status(400).json({ error: `ছবি আপলোডে ত্রুটি: ${errorDetail}` });
+        return;
+      }
+
+      const uploadedUrl = imgbbJson.data.display_url || imgbbJson.data.url;
+      const deleteUrl = imgbbJson.data.delete_url;
+
+      res.json({
+        success: true,
+        url: uploadedUrl,
+        displayUrl: imgbbJson.data.display_url,
+        thumbUrl: imgbbJson.data.thumb?.url,
+        deleteUrl
+      });
+    } catch (err: any) {
+      console.error("[ImgBB Upload Exception]:", err);
+      res.status(500).json({ error: "সার্ভারে রিপোর্ট আপলোডে ত্রুটি ঘটেছে।" });
+    }
+  });
+
   // Submit appointment / serial
   app.post("/api/public/appointments", async (req, res) => {
     try {
-      const { fullName, phone, serviceName, problemDescription, preferredChamber, preferredDate } = req.body;
+      const {
+        fullName,
+        phone,
+        patientType,
+        serviceName,
+        problemDescription,
+        preferredChamber,
+        preferredDate,
+        reportImageUrl
+      } = req.body;
 
       if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
         res.status(400).json({ error: "অনুগ্রহ করে আপনার সঠিক নাম প্রদান করুন।" });
@@ -385,6 +469,11 @@ async function startServer() {
         return;
       }
 
+      if (!patientType || !['male', 'female', 'child'].includes(patientType)) {
+        res.status(400).json({ error: "অনুগ্রহ করে রোগীর ধরন (পুরুষ / মহিলা / শিশু) নির্বাচন করুন।" });
+        return;
+      }
+
       if (!serviceName || typeof serviceName !== 'string') {
         res.status(400).json({ error: "অনুগ্রহ করে কাঙ্ক্ষিত সেবা নির্বাচন করুন।" });
         return;
@@ -393,10 +482,12 @@ async function startServer() {
       const appointment = await db.createAppointment({
         fullName: fullName.trim(),
         phone: phone.trim(),
+        patientType: patientType as any,
         serviceName: serviceName.trim(),
         problemDescription: (problemDescription || "").trim(),
         preferredChamber: preferredChamber || "মতলব চেম্বার",
-        preferredDate: preferredDate || "যেকোনো দিন"
+        preferredDate: preferredDate || "যেকোনো দিন",
+        reportImageUrl: typeof reportImageUrl === 'string' ? reportImageUrl.trim() : ""
       });
 
       res.status(201).json({
@@ -811,25 +902,6 @@ async function startServer() {
     }
   });
 
-  // Direct Doctor Photo Upload (Open setup endpoint for initial configuration)
-  app.post("/api/doctor/upload-photo-direct", async (req, res) => {
-    try {
-      const { imageData, fileName } = req.body;
-      if (!imageData || typeof imageData !== "string") {
-        res.status(400).json({ error: "ছবির ডাটা পাওয়া যায়নি।" });
-        return;
-      }
-      const imageUrl = await saveRawDoctorPhoto(imageData, fileName);
-      res.json({
-        success: true,
-        imageUrl,
-        message: "চিকিৎসকের মূল ছবি সফলভাবে সংরক্ষিত হয়েছে।"
-      });
-    } catch (err: any) {
-      console.error("Direct photo upload error:", err);
-      res.status(500).json({ error: err.message || "ছবি সংরক্ষণে সমস্যা হয়েছে।" });
-    }
-  });
 
   // Smart doctor photo file resolver
   app.get(["/dr-tamjid-hossain.jpg", "/dr-tamjid-hossain.png", "/dr-tamjid-hossain.jpeg", "/dr-tamjid-hossain.webp"], async (req, res, next) => {

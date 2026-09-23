@@ -69,13 +69,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      {/* 1. Top Announcement & Hotline Bar */}
-      <div className="bg-emerald-950 text-emerald-100 text-xs py-2 px-4 border-b border-emerald-900/60 sticky top-0 z-50">
+      {/* 1. Top Announcement & Hotline Bar with Logo Royal Blue */}
+      <div className="bg-[#0052a3] text-blue-50 text-xs py-2 px-4 border-b border-[#003d7a] sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           {/* Medical College Affiliation */}
           <div className="flex items-center gap-2 text-center sm:text-left">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-            <span className="text-emerald-300 font-medium text-[11px] sm:text-xs">
+            <span className="text-blue-100 font-medium text-[11px] sm:text-xs">
               চাঁদপুর হোমিওপ্যাথিক মেডিকেল কলেজের প্রিন্সিপালের তত্ত্বাবধানে পরিচালিত
             </span>
           </div>
@@ -83,13 +83,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Quick Hotline & Auth */}
           <div className="flex items-center gap-3 font-sans-en text-[11px] sm:text-xs">
             <div className="flex items-center gap-1.5 font-medium">
-              <PhoneCall className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-              <span className="text-emerald-200">হটলাইন:</span>
-              <a href="tel:+8801714990001" className="text-white hover:text-red-300 transition font-bold">
+              <PhoneCall className="w-3.5 h-3.5 text-amber-300 flex-shrink-0" />
+              <span className="text-blue-200">হটলাইন:</span>
+              <a href="tel:+8801714990001" className="text-white hover:text-amber-200 transition font-bold">
                 01714-990001
               </a>
-              <span className="text-emerald-700">|</span>
-              <a href="tel:+8801614990001" className="text-white hover:text-red-300 transition font-bold">
+              <span className="text-blue-300/60">|</span>
+              <a href="tel:+8801614990001" className="text-white hover:text-amber-200 transition font-bold">
                 01614-990001
               </a>
             </div>
@@ -99,14 +99,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {isAdmin ? (
                   <Link
                     to="/dashboard"
-                    className="inline-flex items-center gap-1 text-[11px] bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-2.5 py-0.5 rounded transition shadow-xs"
+                    className="inline-flex items-center gap-1 text-[11px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-0.5 rounded transition shadow-xs"
                   >
-                    <Shield className="w-3 h-3 text-emerald-300" />
+                    <Shield className="w-3 h-3 text-emerald-200" />
                     <span>অ্যাডমিন ড্যাশবোর্ড</span>
                   </Link>
                 ) : (
-                  <div className="inline-flex items-center gap-1 text-[11px] bg-emerald-900 text-emerald-200 px-2 py-0.5 rounded border border-emerald-700/60">
-                    <User className="w-3 h-3 text-emerald-400" />
+                  <div className="inline-flex items-center gap-1 text-[11px] bg-blue-900/80 text-blue-100 px-2 py-0.5 rounded border border-blue-400/40">
+                    <User className="w-3 h-3 text-blue-200" />
                     <span className="truncate max-w-[100px]">{session.user.name}</span>
                   </div>
                 )}

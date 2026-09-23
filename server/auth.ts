@@ -45,7 +45,7 @@ export const OWNER_NAME = "Dr. Tamjid Hossain (ডা. তামজীদ হো
 
 // Initialize Better Auth instance
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET || "ydQ6Myo5VeiKsr6jhO1cIaEaQZ40jEf1",
+  secret: process.env.BETTER_AUTH_SECRET || crypto.randomBytes(32).toString('hex'),
   baseURL: process.env.BETTER_AUTH_URL || process.env.APP_URL || "http://localhost:3000"
 });
 

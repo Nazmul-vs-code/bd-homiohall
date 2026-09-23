@@ -86,10 +86,12 @@ export interface Appointment {
   id: string;
   fullName: string;
   phone: string;
+  patientType?: 'male' | 'female' | 'child' | '';
   serviceName: string;
   problemDescription?: string;
   preferredChamber?: string;
   preferredDate?: string;
+  reportImageUrl?: string;
   status: 'pending' | 'contacted' | 'completed';
   createdAt: string;
   notes?: string;

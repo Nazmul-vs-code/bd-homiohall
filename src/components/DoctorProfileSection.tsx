@@ -16,7 +16,6 @@ import {
   ArrowRight,
   HeartPulse
 } from 'lucide-react';
-import { DoctorPhotoUploadModal } from './DoctorPhotoUploadModal.js';
 import { VisitingCardModal } from './VisitingCardModal.js';
 
 interface DoctorProfileSectionProps {
@@ -40,13 +39,8 @@ export const DoctorProfileSection: React.FC<DoctorProfileSectionProps> = ({
   const activeDoc =
     allDoctors.find((d) => (d.id || d.nameBn) === selectedDoctorId) || allDoctors[0];
 
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isVisitingCardOpen, setIsVisitingCardOpen] = useState(false);
   const [cardDoctor, setCardDoctor] = useState<DoctorProfile>(activeDoc);
-
-  const handlePhotoSuccess = (newUrl: string) => {
-    if (onPhotoUpdated) onPhotoUpdated(newUrl);
-  };
 
   const handleShowVisitingCard = (doc: DoctorProfile) => {
     setCardDoctor(doc);
@@ -143,16 +137,6 @@ export const DoctorProfileSection: React.FC<DoctorProfileSectionProps> = ({
                   <ShieldCheck className="w-4 h-4" />
                   <span>{activeDoc.registrationNo}</span>
                 </div>
-
-                {/* Instant Upload Button overlay */}
-                <button
-                  onClick={() => setIsUploadOpen(true)}
-                  className="absolute top-4 right-4 bg-black/60 hover:bg-black/85 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-md flex items-center gap-1.5 transition backdrop-blur-sm z-10 border border-white/20 cursor-pointer"
-                  title="আসল ছবি পরিবর্তন করুন"
-                >
-                  <Camera className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>আসল ছবি</span>
-                </button>
 
                 {/* Bottom Overlay Label */}
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-5 text-white z-10">
@@ -283,13 +267,6 @@ export const DoctorProfileSection: React.FC<DoctorProfileSectionProps> = ({
         isOpen={isVisitingCardOpen}
         onClose={() => setIsVisitingCardOpen(false)}
         doctor={cardDoctor}
-      />
-
-      <DoctorPhotoUploadModal
-        isOpen={isUploadOpen}
-        onClose={() => setIsUploadOpen(false)}
-        onSuccess={handlePhotoSuccess}
-        currentImageUrl={activeDoc.imageUrl || '/dr-tamjid-hossain.jpg'}
       />
     </section>
   );

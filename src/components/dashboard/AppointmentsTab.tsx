@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
 import { Appointment } from '../../types.js';
-import { Calendar, Phone, CheckCircle, Clock, Trash2, CheckCheck, MessageSquare, AlertCircle, Filter } from 'lucide-react';
+import {
+  Calendar,
+  Phone,
+  CheckCircle,
+  Clock,
+  Trash2,
+  CheckCheck,
+  MessageSquare,
+  AlertCircle,
+  Filter,
+  ExternalLink,
+  Image as ImageIcon,
+  UserCheck,
+  Heart,
+  Baby
+} from 'lucide-react';
 
 interface AppointmentsTabProps {
   appointments: Appointment[];
@@ -125,6 +140,22 @@ export const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="text-base font-bold text-slate-900">{apt.fullName}</h4>
+                      {apt.patientType && (
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
+                          apt.patientType === 'male'
+                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                            : apt.patientType === 'female'
+                            ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                            : 'bg-amber-100 text-amber-800 border border-amber-200'
+                        }`}>
+                          {apt.patientType === 'male' && <UserCheck className="w-3 h-3" />}
+                          {apt.patientType === 'female' && <Heart className="w-3 h-3" />}
+                          {apt.patientType === 'child' && <Baby className="w-3 h-3" />}
+                          <span>
+                            {apt.patientType === 'male' ? 'পুরুষ' : apt.patientType === 'female' ? 'মহিলা' : 'শিশু'}
+                          </span>
+                        </span>
+                      )}
                       <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${statusColors[apt.status]}`}>
                         {statusLabels[apt.status]}
                       </span>
@@ -162,6 +193,33 @@ export const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       <p className="text-slate-700 text-sm mt-0.5 leading-relaxed italic">
                         "{apt.problemDescription}"
                       </p>
+                    </div>
+                  )}
+
+                  {apt.reportImageUrl && (
+                    <div className="sm:col-span-2 pt-2 border-t border-slate-200/60 flex items-center justify-between gap-3 bg-white p-2.5 rounded-lg border border-slate-200">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={apt.reportImageUrl}
+                          alt="Medical Report"
+                          className="w-10 h-10 object-cover rounded-lg border border-slate-200"
+                        />
+                        <div>
+                          <span className="text-xs font-bold text-slate-800 block">সংযুক্ত প্রেসক্রিপশন / রিপোর্ট (PNG)</span>
+                          <span className="text-[11px] text-slate-500 font-sans-en truncate max-w-xs block">
+                            ImgBB ক্লাউডে সংরক্ষিত
+                          </span>
+                        </div>
+                      </div>
+                      <a
+                        href={apt.reportImageUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 flex items-center gap-1 transition"
+                      >
+                        <span>বড় করে দেখুন</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     </div>
                   )}
                 </div>
